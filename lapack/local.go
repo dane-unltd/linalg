@@ -8,31 +8,38 @@ package lapack
 
 import "errors"
 
+type MatD interface {
+	Size() (int, int)
+	Stride() int
+
+	ArrayD() ([]float64, bool)
+}
+
 func min(a, b int) int {
-    if a < b {
-        return a
-    }
-    return b
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func max(a, b int) int {
-    if a < b {
-        return b
-    }
-    return a
+	if a < b {
+		return b
+	}
+	return a
 }
 
 var panicOnError bool = false
 
 func PanicOnError(flag bool) {
-    panicOnError = flag
+	panicOnError = flag
 }
 
 func onError(msg string) error {
-    if panicOnError {
-        panic(msg)
-    }
-    return errors.New(msg)
+	if panicOnError {
+		panic(msg)
+	}
+	return errors.New(msg)
 }
 
 // Local Variables:
