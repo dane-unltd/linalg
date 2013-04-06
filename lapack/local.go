@@ -8,13 +8,6 @@ package lapack
 
 import "errors"
 
-type MatD interface {
-	Size() (int, int)
-	Stride() int
-
-	ArrayD() ([]float64, bool)
-}
-
 func min(a, b int) int {
 	if a < b {
 		return a

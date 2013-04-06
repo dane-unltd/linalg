@@ -1,8 +1,15 @@
-package dense
+package matrix
 
 import "math/rand"
 
 type ScD float64
+
+type MatDable interface {
+	Size() (int, int)
+	Stride() int
+
+	ArrayD() []float64
+}
 
 type MatD struct {
 	dense
@@ -17,8 +24,8 @@ func (d ScD) Strides() (int, int) {
 	return 1, 1
 }
 
-func (d ScD) ArrayD() ([]float64, bool) {
-	return []float64{float64(d)}, true
+func (d ScD) ArrayD() []float64 {
+	return []float64{float64(d)}
 }
 
 func (d ScD) At(ixs ...int) float64 {
@@ -127,8 +134,8 @@ func (D *MatD) At(ixs ...int) float64 {
 	return D.data[ix]
 }
 
-func (D *MatD) ArrayD() ([]float64, bool) {
-	return D.data, false
+func (D *MatD) ArrayD() []float64 {
+	return D.data
 }
 
 func (D *MatD) dataIx(matIx int) int {

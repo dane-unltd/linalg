@@ -1,78 +1,77 @@
-package blas
+package matrix
 
 import (
 	//"errors"
-	"github.com/dane-unltd/linalg/dense"
 	"math"
 )
 
 // Returns the Euclidean norm of a vector (returns ||x||_2). 
-func Nrm2D(X MatD) float64 {
+func Nrm2D(X MatDable) float64 {
 	m, n := X.Size()
 	stride := X.Stride()
-	data, _ := X.ArrayD()
+	data := X.ArrayD()
 	if n == 1 {
-		return dnrm2(m, data, 1)
+		return Ops.Dnrm2(m, data, 1)
 	}
 	if m == 1 {
-		return dnrm2(n, data, stride)
+		return Ops.Dnrm2(n, data, stride)
 	}
 	v := 0.0
 	for i := 0; i < n; i++ {
-		v += dnrm2(m, data[i*stride:], 1)
+		v += Ops.Dnrm2(m, data[i*stride:], 1)
 	}
 	return v
 }
 
 // Returns ||Re x||_1 + ||Im x||_1.
-func AsumD(X MatD) float64 {
+func AsumD(X MatDable) float64 {
 	m, n := X.Size()
 	stride := X.Stride()
-	data, _ := X.ArrayD()
+	data := X.ArrayD()
 	if n == 1 {
-		return dasum(m, data, 1)
+		return Ops.Dasum(m, data, 1)
 	}
 	if m == 1 {
-		return dasum(n, data, stride)
+		return Ops.Dasum(n, data, stride)
 	}
 	v := 0.0
 	for i := 0; i < n; i++ {
-		v += dasum(m, data[i*stride:], 1)
+		v += Ops.Dasum(m, data[i*stride:], 1)
 	}
 	return v
 }
 
 // Returns Y = X^T*Y
-func DotD(X, Y MatD) float64 {
+func DotD(X, Y MatDable) float64 {
 	mX, nX := X.Size()
 	mY, nY := Y.Size()
 	if nX != 1 || nY != 1 || mX != mY {
 		return math.NaN()
 	}
-	Xa, _ := X.ArrayD()
-	Ya, _ := Y.ArrayD()
-	return ddot(mX, Xa, 1, Ya, 1)
+	Xa := X.ArrayD()
+	Ya := Y.ArrayD()
+	return Ops.Ddot(mX, Xa, 1, Ya, 1)
 }
 
-func Max(X MatD, dim int) (*dense.MatD, []int) {
+func Max(X MatDable, dim int) (*MatD, []int) {
 	m, n := X.Size()
 	stride := X.Stride()
-	data, _ := X.ArrayD()
+	data := X.ArrayD()
 
-	var res *dense.MatD
+	var res *MatD
 	var ixs []int
 	if dim == 1 {
-		res = dense.Zeros(1, n)
+		res = Zeros(1, n)
 		ixs = make([]int, n)
 		for i := range ixs {
-			ixs[i] = idamax(n, data[i:], stride) - 1
+			ixs[i] = Ops.Idamax(n, data[i:], stride) - 1
 			res.Set(data[i+ixs[i]*stride], i)
 		}
 	} else if dim == 0 {
-		res = dense.Zeros(m, 1)
+		res = Zeros(m, 1)
 		ixs = make([]int, m)
 		for i := range ixs {
-			ixs[i] = idamax(m, data[i*stride:], 1) - 1
+			ixs[i] = Ops.Idamax(m, data[i*stride:], 1) - 1
 			res.Set(data[i*stride+ixs[i]], i)
 		}
 	} else {

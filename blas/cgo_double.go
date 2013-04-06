@@ -6,7 +6,7 @@
 
 package blas
 
-// #cgo linux LDFLAGS: -L/usr/lib/libblas -lblas -L/usr/lib/atlas -latlas
+// #cgo LDFLAGS: -L/usr/lib/libblas -lblas
 // #cgo darwin LDFLAGS: -DYA_BLAS -DYA_LAPACK -DYA_BLASMULT -framework vecLib
 // #include <stdlib.h>
 // #include "blas.h"
@@ -21,7 +21,7 @@ import "unsafe"
 // vector - vector 
 
 // Calculate norm2(X). 
-func dnrm2(N int, X []float64, incX int) float64 {
+func Dnrm2(N int, X []float64, incX int) float64 {
 	var val C.double
 	val = C.dnrm2_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
@@ -30,7 +30,7 @@ func dnrm2(N int, X []float64, incX int) float64 {
 }
 
 // Calculates asum(X). 
-func dasum(N int, X []float64, incX int) float64 {
+func Dasum(N int, X []float64, incX int) float64 {
 	var val C.double
 	val = C.dasum_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
@@ -39,7 +39,7 @@ func dasum(N int, X []float64, incX int) float64 {
 }
 
 // Calculates X.T*Y
-func ddot(N int, X []float64, incX int, Y []float64, incY int) float64 {
+func Ddot(N int, X []float64, incX int, Y []float64, incY int) float64 {
 	var val C.double
 	val = C.ddot_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
@@ -50,7 +50,7 @@ func ddot(N int, X []float64, incX int, Y []float64, incY int) float64 {
 }
 
 // Find MAX(X) and return index to it.
-func idamax(N int, X []float64, incX int) int {
+func Idamax(N int, X []float64, incX int) int {
 	var idx C.int
 	idx = C.idamax_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
@@ -59,7 +59,7 @@ func idamax(N int, X []float64, incX int) int {
 }
 
 // Swap Y <=> X
-func dswap(N int, X []float64, incX int, Y []float64, incY int) {
+func Dswap(N int, X []float64, incX int, Y []float64, incY int) {
 	C.dswap_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -68,7 +68,7 @@ func dswap(N int, X []float64, incX int, Y []float64, incY int) {
 }
 
 // Copy Y <= X
-func dcopy(N int, X []float64, incX int, Y []float64, incY int) {
+func Dcopy(N int, X []float64, incX int, Y []float64, incY int) {
 	C.dcopy_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -77,7 +77,7 @@ func dcopy(N int, X []float64, incX int, Y []float64, incY int) {
 }
 
 // Calculates Y = alpha*X + Y.
-func daxpy(N int, alpha float64, X []float64, incX int, Y []float64, incY int) {
+func Daxpy(N int, alpha float64, X []float64, incX int, Y []float64, incY int) {
 
 	C.daxpy_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&alpha)),
@@ -88,7 +88,7 @@ func daxpy(N int, alpha float64, X []float64, incX int, Y []float64, incY int) {
 }
 
 // Calculate X = alpha*X.
-func dscal(N int, alpha float64, X []float64, incX int) {
+func Dscal(N int, alpha float64, X []float64, incX int) {
 	C.dscal_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&alpha)),
 		(*C.double)(unsafe.Pointer(&X[0])),
@@ -98,14 +98,14 @@ func dscal(N int, alpha float64, X []float64, incX int) {
 /* ------------------------------------------------------------------
  * left out for the time being ....
 
-func drotg(a, b, c, d *float64) {
+func Drotg(a, b, c, d *float64) {
 	C.drotg_((*C.double)(unsafe.Pointer(a)),
 		(*C.double)(unsafe.Pointer(b)),
 		(*C.double)(unsafe.Pointer(c)),
 		(*C.double)(unsafe.Pointer(d)))
 }
 
-func drotmg(d1, d2, b1 *float64, b2 float64, P []float64) {
+func Drotmg(d1, d2, b1 *float64, b2 float64, P []float64) {
 	C.drotmg_((*C.double)(unsafe.Pointer(d1)),
 		(*C.double)(unsafe.Pointer(d2)),
 		(*C.double)(unsafe.Pointer(b1)),
@@ -113,7 +113,7 @@ func drotmg(d1, d2, b1 *float64, b2 float64, P []float64) {
 		(*C.double)(unsafe.Pointer(&P[0])))
 }
 
-func drot(N int, X []float64, incX int, Y []float64, incY int, c, s float64) {
+func Drot(N int, X []float64, incX int, Y []float64, incY int, c, s float64) {
 	C.drot_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -123,7 +123,7 @@ func drot(N int, X []float64, incX int, Y []float64, incY int, c, s float64) {
 		(*C.double)(unsafe.Pointer(&s)))
 }
 
-func drotm(N int, X []float64, incX int, Y []float64, incY int, P []float64) {
+func Drotm(N int, X []float64, incX int, Y []float64, incY int, P []float64) {
 	C.drotm_((*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&X[0])),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -140,7 +140,7 @@ func drotm(N int, X []float64, incX int, Y []float64, incY int, P []float64) {
 
 // For general matrix A and vector X and Y compute
 // Y = alpha * A * X + beta * Y or Y = alpha * A.T * X + beta * Y
-func dgemv(transA string, M int, N int, alpha float64,
+func Dgemv(transA string, M int, N int, alpha float64,
 	A []float64, lda int, X []float64, incX int, beta float64,
 	Y []float64, incY int) {
 
@@ -163,7 +163,7 @@ func dgemv(transA string, M int, N int, alpha float64,
 
 // For general band matrix A  and vector X and Y compute
 // Y = alpha * A * X + beta * Y or Y = alpha * A.T * X + beta * Y
-func dgbmv(transA string, M int, N int, KL int, KU int,
+func Dgbmv(transA string, M int, N int, KL int, KU int,
 	alpha float64, A []float64, lda int,
 	X []float64, incX int, beta float64,
 	Y []float64, incY int) {
@@ -189,7 +189,7 @@ func dgbmv(transA string, M int, N int, KL int, KU int,
 
 // For triangular matrix A and vector X compute
 // X = A * X, X = A.T * X
-func dtrmv(uplo, transA, diag string,
+func Dtrmv(uplo, transA, diag string,
 	N int, A []float64, lda int, X []float64, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -210,7 +210,7 @@ func dtrmv(uplo, transA, diag string,
 
 // For triangular band matrix A and vector X compute
 // X = A * X, X = A.T * X
-func dtbmv(uplo, transA, diag string,
+func Dtbmv(uplo, transA, diag string,
 	N int, K int, A []float64, lda int, X []float64, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -232,7 +232,7 @@ func dtbmv(uplo, transA, diag string,
 
 // For triangular packed matrix A and vector X compute
 // X = A * X, X = A.T * X
-func dtpmv(uplo, transA, diag string,
+func Dtpmv(uplo, transA, diag string,
 	N int, Ap []float64, X []float64, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -252,7 +252,7 @@ func dtpmv(uplo, transA, diag string,
 
 // For triangular matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func dtrsv(uplo, transA, diag string,
+func Dtrsv(uplo, transA, diag string,
 	N int, A []float64, lda int, X []float64, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -273,7 +273,7 @@ func dtrsv(uplo, transA, diag string,
 
 // For triangular band matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func dtbsv(uplo, transA, diag string,
+func Dtbsv(uplo, transA, diag string,
 	N int, K int, A []float64, lda int, X []float64, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -295,7 +295,7 @@ func dtbsv(uplo, transA, diag string,
 
 // For triangular matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func dtpsv(uplo, transA, diag string,
+func Dtpsv(uplo, transA, diag string,
 	N int, Ap []float64, X []float64, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -315,7 +315,7 @@ func dtpsv(uplo, transA, diag string,
 
 // For symmetric matrix  and vector X solve
 // Y = alpha * A * X + beta * Y
-func dsymv(uplo string, N int, alpha float64,
+func Dsymv(uplo string, N int, alpha float64,
 	A []float64, lda int, X []float64, incX int, beta float64,
 	Y []float64, incY int) {
 
@@ -337,7 +337,7 @@ func dsymv(uplo string, N int, alpha float64,
 
 // For symmetric band matrix  and vector X solve
 // Y = alpha * A * X + beta * Y
-func dsbmv(uplo string, N int, K int, alpha float64,
+func Dsbmv(uplo string, N int, K int, alpha float64,
 	A []float64, lda int, X []float64, incX int, beta float64,
 	Y []float64, incY int) {
 
@@ -362,7 +362,7 @@ func dsbmv(uplo string, N int, K int, alpha float64,
 // For symmetric packed matrix  and vector X solve
 // Y = alpha * A * X + beta * Y
 
-func dspmv(uplo string, N int, alpha float64,
+func Dspmv(uplo string, N int, alpha float64,
 	Ap []float64, X []float64, incX int, beta float64,
 	Y []float64, incY int) {
 
@@ -382,7 +382,7 @@ func dspmv(uplo string, N int, alpha float64,
 
 }
 
-func dger(M int, N int, alpha float64,
+func Dger(M int, N int, alpha float64,
 	X []float64, incX int, Y []float64, incY int,
 	A []float64, lda int) {
 
@@ -399,7 +399,7 @@ func dger(M int, N int, alpha float64,
 
 }
 
-func dsyr(uplo string, N int, alpha float64,
+func Dsyr(uplo string, N int, alpha float64,
 	X []float64, incX int, A []float64, lda int) {
 
 	cuplo := C.CString(uplo)
@@ -416,7 +416,7 @@ func dsyr(uplo string, N int, alpha float64,
 
 }
 
-func dspr(uplo string, N int, alpha float64,
+func Dspr(uplo string, N int, alpha float64,
 	X []float64, incX int, Ap []float64) {
 
 	cuplo := C.CString(uplo)
@@ -432,7 +432,7 @@ func dspr(uplo string, N int, alpha float64,
 
 }
 
-func dsyr2(uplo string, N int, alpha float64,
+func Dsyr2(uplo string, N int, alpha float64,
 	X []float64, incX int, Y []float64, incY int, A []float64, lda int) {
 
 	cuplo := C.CString(uplo)
@@ -452,7 +452,7 @@ func dsyr2(uplo string, N int, alpha float64,
 
 }
 
-func dspr2(uplo string, N int, alpha float64,
+func Dspr2(uplo string, N int, alpha float64,
 	X []float64, incX int, Y []float64, incY int, Ap []float64) {
 
 	cuplo := C.CString(uplo)
@@ -475,7 +475,7 @@ func dspr2(uplo string, N int, alpha float64,
 // ===========================================================================
 // Matrix - Matrix
 
-func dgemm(transA, transB string, M int, N int, K int,
+func Dgemm(transA, transB string, M int, N int, K int,
 	alpha float64, A []float64, lda int, B []float64, ldb int, beta float64,
 	C []float64, ldc int) {
 
@@ -509,7 +509,7 @@ func dgemm(transA, transB string, M int, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func dsymm(side, uplo string, M int, N int,
+func Dsymm(side, uplo string, M int, N int,
 	alpha float64, A []float64, lda int, B []float64, ldb int, beta float64,
 	C []float64, ldc int) {
 
@@ -542,7 +542,7 @@ func dsymm(side, uplo string, M int, N int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func dsyrk(uplo, trans string, N int, K int,
+func Dsyrk(uplo, trans string, N int, K int,
 	alpha float64, A []float64, lda int, beta float64,
 	C []float64, ldc int) {
 
@@ -570,7 +570,7 @@ func dsyrk(uplo, trans string, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func dsyr2k(uplo, trans string, N int, K int,
+func Dsyr2k(uplo, trans string, N int, K int,
 	alpha float64, A []float64, lda int, B []float64, ldb int, beta float64,
 	C []float64, ldc int) {
 
@@ -603,7 +603,7 @@ func dsyr2k(uplo, trans string, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func dtrmm(side, uplo, transA, diag string,
+func Dtrmm(side, uplo, transA, diag string,
 	M int, N int, alpha float64, A []float64, lda int, B []float64, ldb int) {
 
 	cuplo := C.CString(uplo)
@@ -633,7 +633,7 @@ func dtrmm(side, uplo, transA, diag string,
 		(*C.int)(unsafe.Pointer(&ldb)))
 }
 
-func dtrsm(side, uplo, transA, diag string,
+func Dtrsm(side, uplo, transA, diag string,
 	M int, N int, alpha float64, A []float64, lda int, B []float64, ldb int) {
 
 	cuplo := C.CString(uplo)

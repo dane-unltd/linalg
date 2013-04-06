@@ -6,7 +6,7 @@
 
 package blas
 
-// #cgo linux LDFLAGS: -L/usr/lib/libblas -lblas -L/usr/lib/atlas -latlas
+// #cgo LDFLAGS: -L/usr/lib/libblas -lblas
 // #cgo darwin LDFLAGS: -DYA_BLAS -DYA_LAPACK -DYA_BLASMULT -framework vecLib
 // #include <stdlib.h>
 // #include "blas.h"
@@ -19,7 +19,7 @@ import "unsafe"
 // vector - vector 
 
 // Calculate norm2(X). 
-func dznrm2(N int, X []complex128, incX int) float64 {
+func Dznrm2(N int, X []complex128, incX int) float64 {
 	var val C.double
 	val = C.dznrm2_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
@@ -28,7 +28,7 @@ func dznrm2(N int, X []complex128, incX int) float64 {
 }
 
 // Calculates asum(X). 
-func dzasum(N int, X []complex128, incX int) float64 {
+func Dzasum(N int, X []complex128, incX int) float64 {
 	var val C.double
 	val = C.dzasum_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
@@ -37,31 +37,31 @@ func dzasum(N int, X []complex128, incX int) float64 {
 }
 
 // Calculates conjucate X.T*Y
-func zdotc(N int, X []complex128, incX int, Y []complex128, incY int) complex128 {
+func Zdotc(N int, X []complex128, incX int, Y []complex128, incY int) complex128 {
 	var result complex128
-	/*	C.zdotcsub_((*C.int)(unsafe.Pointer(&N)),
+	C.zdotc_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
 		(*C.int)(unsafe.Pointer(&incX)),
 		unsafe.Pointer(&Y[0]),
 		(*C.int)(unsafe.Pointer(&incY)),
-		unsafe.Pointer(&result)) */
+		unsafe.Pointer(&result))
 	return result
 }
 
 // Calculates X.T*Y
-func zdotu(N int, X []complex128, incX int, Y []complex128, incY int) complex128 {
+func Zdotu(N int, X []complex128, incX int, Y []complex128, incY int) complex128 {
 	var result complex128
-	/*	C.zdotusub_((*C.int)(unsafe.Pointer(&N)),
+	C.zdotu_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
 		(*C.int)(unsafe.Pointer(&incX)),
 		unsafe.Pointer(&Y[0]),
 		(*C.int)(unsafe.Pointer(&incY)),
-		unsafe.Pointer(&result))*/
+		unsafe.Pointer(&result))
 	return result
 }
 
 // Find MAX(X) and return index to it.
-func izamax(N int, X []complex128, incX int) int {
+func Izamax(N int, X []complex128, incX int) int {
 	var idx C.int
 	idx = C.izamax_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
@@ -70,7 +70,7 @@ func izamax(N int, X []complex128, incX int) int {
 }
 
 // Swap Y <=> X
-func zswap(N int, X []complex128, incX int, Y []complex128, incY int) {
+func Zswap(N int, X []complex128, incX int, Y []complex128, incY int) {
 	C.zswap_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -79,7 +79,7 @@ func zswap(N int, X []complex128, incX int, Y []complex128, incY int) {
 }
 
 // Copy Y <= X
-func zcopy(N int, X []complex128, incX int, Y []complex128, incY int) {
+func Zcopy(N int, X []complex128, incX int, Y []complex128, incY int) {
 	C.zcopy_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&X[0]),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -88,7 +88,7 @@ func zcopy(N int, X []complex128, incX int, Y []complex128, incY int) {
 }
 
 // Calculates Y = alpha*X + Y.
-func zaxpy(N int, alpha complex128, X []complex128, incX int, Y []complex128, incY int) {
+func Zaxpy(N int, alpha complex128, X []complex128, incX int, Y []complex128, incY int) {
 
 	C.zaxpy_((*C.int)(unsafe.Pointer(&N)),
 		unsafe.Pointer(&alpha),
@@ -99,7 +99,7 @@ func zaxpy(N int, alpha complex128, X []complex128, incX int, Y []complex128, in
 }
 
 // Calculate X = alpha*X.
-func zscal(N int, alpha complex128, X []complex128, incX int) {
+func Zscal(N int, alpha complex128, X []complex128, incX int) {
 	C.zscal_((*C.int)(unsafe.Pointer(&N)),
 		(unsafe.Pointer(&alpha)),
 		(unsafe.Pointer(&X[0])),
@@ -109,14 +109,14 @@ func zscal(N int, alpha complex128, X []complex128, incX int) {
 /* ------------------------------------------------------------------
  * left out for the time being ....
 
-func zrotg(a, b, c, d *complex128) {
+func Zrotg(a, b, c, d *complex128) {
 	C.zrotg_((unsafe.Pointer(a)),
 		(unsafe.Pointer(b)),
 		(unsafe.Pointer(c)),
 		(unsafe.Pointer(d)))
 }
 
-func zrotmg(d1, d2, b1 *complex128, b2 complex128, P []complex128) {
+func Zrotmg(d1, d2, b1 *complex128, b2 complex128, P []complex128) {
 	C.zrotmg_((unsafe.Pointer(d1)),
 		(unsafe.Pointer(d2)),
 		(unsafe.Pointer(b1)),
@@ -124,7 +124,7 @@ func zrotmg(d1, d2, b1 *complex128, b2 complex128, P []complex128) {
 		(unsafe.Pointer(&P[0])))
 }
 
-func zrot(N int, X []complex128, incX int, Y []complex128, incY int, c, s complex128) {
+func Zrot(N int, X []complex128, incX int, Y []complex128, incY int, c, s complex128) {
 	C.zrot_((*C.int)(unsafe.Pointer(&N)),
 		(unsafe.Pointer(&X[0])),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -134,7 +134,7 @@ func zrot(N int, X []complex128, incX int, Y []complex128, incY int, c, s comple
 		(unsafe.Pointer(&s)))
 }
 
-func zrotm(N int, X []complex128, incX int, Y []complex128, incY int, P []complex128) {
+func Zrotm(N int, X []complex128, incX int, Y []complex128, incY int, P []complex128) {
 	C.zrotm_((*C.int)(unsafe.Pointer(&N)),
 		(unsafe.Pointer(&X[0])),
 		(*C.int)(unsafe.Pointer(&incX)),
@@ -151,7 +151,7 @@ func zrotm(N int, X []complex128, incX int, Y []complex128, incY int, P []comple
 
 // For general matrix A and vector X and Y compute
 // Y = alpha * A * X + beta * Y or Y = alpha * A.T * X + beta * Y
-func zgemv(transA string, M int, N int, alpha complex128,
+func Zgemv(transA string, M int, N int, alpha complex128,
 	A []complex128, lda int, X []complex128, incX int, beta complex128,
 	Y []complex128, incY int) {
 
@@ -173,7 +173,7 @@ func zgemv(transA string, M int, N int, alpha complex128,
 
 // For general band matrix A  and vector X and Y compute
 // Y = alpha * A * X + beta * Y or Y = alpha * A.T * X + beta * Y
-func zgbmv(transA string, M int, N int, KL int, KU int,
+func Zgbmv(transA string, M int, N int, KL int, KU int,
 	alpha complex128, A []complex128, lda int,
 	X []complex128, incX int, beta complex128,
 	Y []complex128, incY int) {
@@ -198,7 +198,7 @@ func zgbmv(transA string, M int, N int, KL int, KU int,
 
 // For triangular matrix A and vector X compute
 // X = A * X, X = A.T * X
-func ztrmv(uplo, transA, diag string,
+func Ztrmv(uplo, transA, diag string,
 	N int, A []complex128, lda int, X []complex128, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -218,7 +218,7 @@ func ztrmv(uplo, transA, diag string,
 
 // For triangular band matrix A and vector X compute
 // X = A * X, X = A.T * X
-func ztbmv(uplo, transA, diag string,
+func Ztbmv(uplo, transA, diag string,
 	N int, K int, A []complex128, lda int, X []complex128, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -239,7 +239,7 @@ func ztbmv(uplo, transA, diag string,
 
 // For triangular matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func ztrsv(uplo, transA, diag string,
+func Ztrsv(uplo, transA, diag string,
 	N int, A []complex128, lda int, X []complex128, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -259,7 +259,7 @@ func ztrsv(uplo, transA, diag string,
 
 // For triangular band matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func ztbsv(uplo, transA, diag string,
+func Ztbsv(uplo, transA, diag string,
 	N int, K int, A []complex128, lda int, X []complex128, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -280,7 +280,7 @@ func ztbsv(uplo, transA, diag string,
 
 // For symmetric matrix  and vector X solve
 // Y = alpha * A * X + beta * Y
-func zhemv(uplo string, N int, alpha complex128,
+func Zhemv(uplo string, N int, alpha complex128,
 	A []complex128, lda int, X []complex128, incX int, beta complex128,
 	Y []complex128, incY int) {
 
@@ -301,7 +301,7 @@ func zhemv(uplo string, N int, alpha complex128,
 
 // For symmetric band matrix  and vector X solve
 // Y = alpha * A * X + beta * Y
-func zhbmv(uplo string, N int, K int, alpha complex128,
+func Zhbmv(uplo string, N int, K int, alpha complex128,
 	A []complex128, lda int, X []complex128, incX int, beta complex128,
 	Y []complex128, incY int) {
 
@@ -322,7 +322,7 @@ func zhbmv(uplo string, N int, K int, alpha complex128,
 
 }
 
-func zgerc(M int, N int, alpha complex128,
+func Zgerc(M int, N int, alpha complex128,
 	X []complex128, incX int, Y []complex128, incY int,
 	A []complex128, lda int) {
 
@@ -338,7 +338,7 @@ func zgerc(M int, N int, alpha complex128,
 
 }
 
-func zgeru(M int, N int, alpha complex128,
+func Zgeru(M int, N int, alpha complex128,
 	X []complex128, incX int, Y []complex128, incY int,
 	A []complex128, lda int) {
 
@@ -354,7 +354,7 @@ func zgeru(M int, N int, alpha complex128,
 
 }
 
-func zher(uplo string, N int, alpha float64,
+func Zher(uplo string, N int, alpha float64,
 	X []complex128, incX int, A []complex128, lda int) {
 
 	cuplo := C.CString(uplo)
@@ -370,7 +370,7 @@ func zher(uplo string, N int, alpha float64,
 
 }
 
-func zher2(uplo string, N int, alpha complex128,
+func Zher2(uplo string, N int, alpha complex128,
 	X []complex128, incX int, Y []complex128, incY int, A []complex128, lda int) {
 
 	cuplo := C.CString(uplo)
@@ -391,7 +391,7 @@ func zher2(uplo string, N int, alpha complex128,
 /**
 // For triangular packed matrix A and vector X compute
 // X = A * X, X = A.T * X
-func ztpmv(uplo, transA, diag string,
+func Ztpmv(uplo, transA, diag string,
 		N int, Ap []complex128, X []complex128, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -411,7 +411,7 @@ func ztpmv(uplo, transA, diag string,
 
 // For triangular matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func ztpsv(uplo, transA, diag string,
+func Ztpsv(uplo, transA, diag string,
 		N int, Ap []complex128, X []complex128, incX int) {
 
 	cuplo := C.CString(uplo)
@@ -430,7 +430,7 @@ func ztpsv(uplo, transA, diag string,
 
 // For symmetric packed matrix  and vector X solve
 // Y = alpha * A * X + beta * Y
-func zspmv(uplo string, N int, alpha complex128,
+func Zspmv(uplo string, N int, alpha complex128,
 	Ap []complex128, X []complex128, incX int, beta complex128,
 	Y []complex128, incY int) {
 
@@ -449,7 +449,7 @@ func zspmv(uplo string, N int, alpha complex128,
 
 }
 
-func zspr(uplo string, N int, alpha complex128,
+func Zspr(uplo string, N int, alpha complex128,
 		X []complex128, incX int, Ap []complex128) {
 
 	cuplo := C.CString(uplo)
@@ -464,7 +464,7 @@ func zspr(uplo string, N int, alpha complex128,
 
 }
 
-func zspr2(uplo string, N int, alpha complex128,
+func Zspr2(uplo string, N int, alpha complex128,
 	X []complex128, incX int, Y []complex128, incY int, Ap []complex128) {
 
 	cuplo := C.CString(uplo)
@@ -487,7 +487,7 @@ func zspr2(uplo string, N int, alpha complex128,
 // ===========================================================================
 // Matrix - Matrix
 
-func zgemm(transA, transB string, M int, N int, K int,
+func Zgemm(transA, transB string, M int, N int, K int,
 	alpha complex128, A []complex128, lda int, B []complex128, ldb int, beta complex128,
 	C []complex128, ldc int) {
 
@@ -510,7 +510,7 @@ func zgemm(transA, transB string, M int, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func zsymm(side, uplo string, M int, N int,
+func Zsymm(side, uplo string, M int, N int,
 	alpha complex128, A []complex128, lda int, B []complex128, ldb int, beta complex128,
 	C []complex128, ldc int) {
 
@@ -532,7 +532,7 @@ func zsymm(side, uplo string, M int, N int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func zhemm(side, uplo string, M int, N int,
+func Zhemm(side, uplo string, M int, N int,
 	alpha complex128, A []complex128, lda int, B []complex128, ldb int, beta complex128,
 	C []complex128, ldc int) {
 
@@ -554,7 +554,7 @@ func zhemm(side, uplo string, M int, N int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func zsyrk(uplo, trans string, N int, K int,
+func Zsyrk(uplo, trans string, N int, K int,
 	alpha complex128, A []complex128, lda int, beta complex128,
 	C []complex128, ldc int) {
 
@@ -576,7 +576,7 @@ func zsyrk(uplo, trans string, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func zherk(uplo, trans string, N int, K int,
+func Zherk(uplo, trans string, N int, K int,
 	alpha complex128, A []complex128, lda int, beta float64,
 	B []complex128, ldb int) {
 
@@ -598,7 +598,7 @@ func zherk(uplo, trans string, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldb)))
 }
 
-func zsyr2k(uplo, trans string, N int, K int,
+func Zsyr2k(uplo, trans string, N int, K int,
 	alpha complex128, A []complex128, lda int, B []complex128, ldb int, beta complex128,
 	C []complex128, ldc int) {
 
@@ -622,7 +622,7 @@ func zsyr2k(uplo, trans string, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func zher2k(uplo, trans string, N int, K int,
+func Zher2k(uplo, trans string, N int, K int,
 	alpha complex128, A []complex128, lda int, B []complex128, ldb int, beta float64,
 	C []complex128, ldc int) {
 
@@ -646,7 +646,7 @@ func zher2k(uplo, trans string, N int, K int,
 		(*C.int)(unsafe.Pointer(&ldc)))
 }
 
-func ztrmm(side, uplo, transA, diag string,
+func Ztrmm(side, uplo, transA, diag string,
 	M int, N int, alpha complex128, A []complex128, lda int, B []complex128, ldb int) {
 
 	cuplo := C.CString(uplo)
@@ -668,7 +668,7 @@ func ztrmm(side, uplo, transA, diag string,
 		(*C.int)(unsafe.Pointer(&ldb)))
 }
 
-func ztrsm(side, uplo, transA, diag string,
+func Ztrsm(side, uplo, transA, diag string,
 	M int, N int, alpha complex128, A []complex128, lda int, B []complex128, ldb int) {
 
 	cuplo := C.CString(uplo)

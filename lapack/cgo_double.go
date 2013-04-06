@@ -16,13 +16,13 @@ import "unsafe"
 //import "fmt"
 
 //int ilaenv_(int  *ispec, char **name, char **opts, int *n1, int *n2, int *n3, int *n4);
-func ilaenv(ispec int, name []string, opts []string, n1, n2, n3, n4 int) int {
+func Ilaenv(ispec int, name []string, opts []string, n1, n2, n3, n4 int) int {
 	return 0
 }
 
 // void dgbsv_(int *n, int *kl, int *ku, int *nrhs,
 //		double *AB, int *ldab, int *ipiv, double *b, int *ldb, int *info);
-func dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64, LDb int) int {
+func Dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64, LDb int) int {
 	var info int = 0
 	C.dgbsv_((*C.int)(unsafe.Pointer(&n)), (*C.int)(unsafe.Pointer(&kl)),
 		(*C.int)(unsafe.Pointer(&ku)), (*C.int)(unsafe.Pointer(&nrhs)),
@@ -34,7 +34,7 @@ func dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64,
 
 // void dgbtrf_(int *m, int *n, int *kl, int *ku,
 //		double *AB, int *ldab, int *ipiv, int *info);
-func dgbtrf(m, n, kl, ku int, AB []float64, ldab int, ipiv []int32) int {
+func Dgbtrf(m, n, kl, ku int, AB []float64, ldab int, ipiv []int32) int {
 	var info int = 0
 	C.dgbtrf_((*C.int)(unsafe.Pointer(&m)), (*C.int)(unsafe.Pointer(&n)),
 		(*C.int)(unsafe.Pointer(&kl)), (*C.int)(unsafe.Pointer(&ku)),
@@ -46,7 +46,7 @@ func dgbtrf(m, n, kl, ku int, AB []float64, ldab int, ipiv []int32) int {
 // void dgbtrs_(char *trans, int *n, int *kl, int *ku, int *nrhs,
 //		double *AB, int *ldab, int *ipiv, double *B, int *ldB, int *info);
 //
-func dgbtrs(trans string, n, kl, ku, nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
+func Dgbtrs(trans string, n, kl, ku, nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
 	var info int = 0
 	ctrans := C.CString(trans)
 	defer C.free(unsafe.Pointer(ctrans))
@@ -61,7 +61,7 @@ func dgbtrs(trans string, n, kl, ku, nrhs int, A []float64, lda int, ipiv []int3
 }
 
 // void dgetrf_(int *m, int *n, double *A, int *lda, int *ipiv, int *info);
-func dgetrf(M, N int, A []float64, lda int, ipiv []int32) int {
+func Dgetrf(M, N int, A []float64, lda int, ipiv []int32) int {
 	var info int = 0
 	C.dgetrf_((*C.int)(unsafe.Pointer(&M)), (*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
@@ -71,7 +71,7 @@ func dgetrf(M, N int, A []float64, lda int, ipiv []int32) int {
 
 // dgetrs_(char *trans, int *n, int *nrhs, double *A, int *lda,
 //    int *ipiv, double *B, int *ldb, int *info);
-func dgetrs(trans string, N, Nrhs int, A []float64, lda int, ipiv []int32,
+func Dgetrs(trans string, N, Nrhs int, A []float64, lda int, ipiv []int32,
 	B []float64, ldb int) int {
 	ctrans := C.CString(trans)
 	defer C.free(unsafe.Pointer(ctrans))
@@ -85,7 +85,7 @@ func dgetrs(trans string, N, Nrhs int, A []float64, lda int, ipiv []int32,
 }
 
 // dgetri_(int *n, double *A, int *lda, int *ipiv, double *work, int *lwork, int *info);
-func dgetri(N int, A []float64, lda int, ipiv []int32) int {
+func Dgetri(N int, A []float64, lda int, ipiv []int32) int {
 	var info int = 0
 	var lwork int = -1
 	var work float64
@@ -106,7 +106,7 @@ func dgetri(N int, A []float64, lda int, ipiv []int32) int {
 }
 
 // dgesv_(int *n, int *nrhs, double *A, int *lda, int *ipiv, double *B, int *ldb, int *info);
-func dgesv(N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
+func Dgesv(N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
 	var info int = 0
 	C.dgesv_((*C.int)(unsafe.Pointer(&N)), (*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
@@ -117,7 +117,7 @@ func dgesv(N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int
 }
 
 // void dgttrf_(int *n, double *dl, double *d, double *du, double *du2, int *ipiv, int *info);
-func dgttrf(N int, DL, D, DU, DU2 []float64, ipiv []int32) int {
+func Dgttrf(N int, DL, D, DU, DU2 []float64, ipiv []int32) int {
 	var info int = 0
 	C.dgttrf_((*C.int)(unsafe.Pointer(&N)), (*C.double)(unsafe.Pointer(&DL[0])),
 		(*C.double)(unsafe.Pointer(&D[0])), (*C.double)(unsafe.Pointer(&DU[0])),
@@ -128,7 +128,7 @@ func dgttrf(N int, DL, D, DU, DU2 []float64, ipiv []int32) int {
 
 // void dgttrs_(char *trans, int *n, int *nrhs, double *dl, double *d,
 //		double *du, double *du2, int *ipiv, double *B, int *ldB, int *info);
-func dgttrs(trans string, N, Nrhs int, DL, D, DU, DU2 []float64,
+func Dgttrs(trans string, N, Nrhs int, DL, D, DU, DU2 []float64,
 	ipiv []int32, B []float64, ldb int) int {
 	var info int = 0
 	ctrans := C.CString(trans)
@@ -145,7 +145,7 @@ func dgttrs(trans string, N, Nrhs int, DL, D, DU, DU2 []float64,
 //		double *DU, double *B, int *ldB, int *info);
 
 // void dpotrf_(char *uplo, int *n, double *A, int *lda, int *info);
-func dpotrf(uplo string, N int, A []float64, lda int) int {
+func Dpotrf(uplo string, N int, A []float64, lda int) int {
 	var info int
 	cuplo := C.CString(uplo)
 	defer C.free(unsafe.Pointer(cuplo))
@@ -160,7 +160,7 @@ func dpotrf(uplo string, N int, A []float64, lda int) int {
 
 // void dpotrs_(char *uplo, int *n, int *nrhs, double *A,
 //		int *lda, double *B, int *ldb, int *info);
-func dpotrs(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
+func Dpotrs(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
 	var info int = 0
 	cuplo := C.CString(uplo)
 	defer C.free(unsafe.Pointer(cuplo))
@@ -177,7 +177,7 @@ func dpotrs(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int
 }
 
 // void dpotri_(char *uplo, int *n, double *A, int *lda, int *info);
-func dpotri(uplo string, N int, A []float64, lda int) int {
+func Dpotri(uplo string, N int, A []float64, lda int) int {
 	var info int = 0
 	cuplo := C.CString(uplo)
 	defer C.free(unsafe.Pointer(cuplo))
@@ -192,7 +192,7 @@ func dpotri(uplo string, N int, A []float64, lda int) int {
 
 // void dposv_(char *uplo, int *n, int *nrhs, double *A, int *lda,
 //		double *B, int *ldb, int *info);
-func dposv(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
+func Dposv(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
 	var info int = 0
 	cuplo := C.CString(uplo)
 	defer C.free(unsafe.Pointer(cuplo))
@@ -223,7 +223,7 @@ func dposv(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int)
 
 // void dsytrf_(char *uplo, int *n, double *A, int *lda, int *ipiv,
 //		double *work, int *lwork, int *info);
-func dsytrf(uplo string, N int, A []float64, lda int, ipiv []int32) int {
+func Dsytrf(uplo string, N int, A []float64, lda int, ipiv []int32) int {
 	var info int = 0
 	var lwork int = -1
 	var work float64
@@ -250,7 +250,7 @@ func dsytrf(uplo string, N int, A []float64, lda int, ipiv []int32) int {
 
 // void dsytrs_(char *uplo, int *n, int *nrhs, double *A, int *lda,
 //		int *ipiv, double *B, int *ldb, int *info);
-func dsytrs(uplo string, N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
+func Dsytrs(uplo string, N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
 
 	var info int = 0
 	cuplo := C.CString(uplo)
@@ -274,7 +274,7 @@ func dsytrs(uplo string, N, Nrhs int, A []float64, lda int, ipiv []int32, B []fl
 
 // void dtrtrs_(char *uplo, char *trans, char *diag, int *n, int *nrhs,
 //		double  *A, int *lda, double *B, int *ldb, int *info);
-func dtrtrs(uplo, trans, diag string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
+func Dtrtrs(uplo, trans, diag string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
 
 	var info int = 0
 	cuplo := C.CString(uplo)
@@ -305,7 +305,7 @@ func dtrtrs(uplo, trans, diag string, N, Nrhs int, A []float64, lda int, B []flo
 
 // void dgeqrf_(int *m, int *n, double *a, int *lda, double *tau,
 //		double *work, int *lwork, int *info);
-func dgeqrf(M, N int, A []float64, lda int, tau []float64) int {
+func Dgeqrf(M, N int, A []float64, lda int, tau []float64) int {
 	var info int = 0
 	var lwork int = -1
 	var work float64
@@ -336,7 +336,7 @@ func dgeqrf(M, N int, A []float64, lda int, tau []float64) int {
 // void dormqr_(char *side, char *trans, int *m, int *n, int *k,
 //		double *a, int *lda, double *tau, double *c, int *ldc,
 //		double *work, int *lwork, int *info);
-func dormqr(side, trans string, M, N, K int, A []float64, lda int, tau, C []float64, ldc int) int {
+func Dormqr(side, trans string, M, N, K int, A []float64, lda int, tau, C []float64, ldc int) int {
 	var info int = 0
 	var lwork int = -1
 	var work float64
@@ -397,7 +397,7 @@ func dormqr(side, trans string, M, N, K int, A []float64, lda int, tau, C []floa
 
 // void dsyevd_(char *jobz, char *uplo, int *n, double *A, int *ldA, double *W,
 //		double *work, int *lwork, int *iwork, int *liwork, int *info);
-func dsyevd(jobz, uplo string, N int, A []float64, lda int, W []float64) int {
+func Dsyevd(jobz, uplo string, N int, A []float64, lda int, W []float64) int {
 	var info int = 0
 	var lwork int = -1
 	var liwork int = -1
@@ -435,7 +435,7 @@ func dsyevd(jobz, uplo string, N int, A []float64, lda int, W []float64) int {
 //		double *vl, double *vu, int *il, int *iu, double *abstol, int *m, double *W,
 //		double *Z, int *ldZ, int *isuppz, double *work, int *lwork, int *iwork,
 //		int *liwork, int *info);
-func dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float64,
+func Dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float64,
 	il, iu int, M int, W, Z []float64, LDz int) int {
 
 	var info int = 0
@@ -519,7 +519,7 @@ func dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 //		double *W, double *Z, int *ldz, double *work, int *lwork, int *iwork,
 //		int *ifail, int *info);
 
-func dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float64,
+func Dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float64,
 	il, iu int, M int, W, Z []float64, LDz int) int {
 
 	var info int = 0
@@ -609,7 +609,7 @@ func dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 // void dgesvd_(char *jobu, char *jobvt, int *m, int *n, double *A, int *ldA,
 //		double *S, double *U, int *ldU, double *Vt, int *ldVt, double *work,
 //		int *lwork, int *info);
-func dgesvd(jobu, jobvt string, M, N int, A []float64, lda int, S []float64, U []float64,
+func Dgesvd(jobu, jobvt string, M, N int, A []float64, lda int, S []float64, U []float64,
 	ldu int, Vt []float64, ldvt int) int {
 
 	var info int = 0
