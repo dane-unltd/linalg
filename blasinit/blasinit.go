@@ -13,4 +13,8 @@ func init() {
 	matrix.Ops.Daxpy = blas.Daxpy
 	matrix.Ops.Dscal = blas.Dscal
 	matrix.Ops.Dgemm = blas.Dgemm
+	matrix.Ops.Dgemv = blas.Dgemv
+	matrix.Ops.Dtpsv = blas.Dtpsv
+	matrix.Ops.Dtrmv = blas.Dtrmv
+	matrix.Ops.Dtrsv = blas.Dtrsv
 }

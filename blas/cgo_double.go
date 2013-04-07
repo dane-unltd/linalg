@@ -140,9 +140,16 @@ func Drotm(N int, X []float64, incX int, Y []float64, incY int, P []float64) {
 
 // For general matrix A and vector X and Y compute
 // Y = alpha * A * X + beta * Y or Y = alpha * A.T * X + beta * Y
-func Dgemv(transA string, M int, N int, alpha float64,
+func Dgemv(trA bool, M int, N int, alpha float64,
 	A []float64, lda int, X []float64, incX int, beta float64,
 	Y []float64, incY int) {
+
+	var transA string
+	if trA {
+		transA = "T"
+	} else {
+		transA = "N"
+	}
 
 	ctransA := C.CString(transA)
 	defer C.free(unsafe.Pointer(ctransA))
@@ -252,8 +259,15 @@ func Dtpmv(uplo, transA, diag string,
 
 // For triangular matrix A and vector X solve
 // X = inv(A) * X or X = inv(A.T) * X
-func Dtrsv(uplo, transA, diag string,
+func Dtrsv(uplo string, trA bool, diag string,
 	N int, A []float64, lda int, X []float64, incX int) {
+
+	var transA string
+	if trA {
+		transA = "T"
+	} else {
+		transA = "N"
+	}
 
 	cuplo := C.CString(uplo)
 	defer C.free(unsafe.Pointer(cuplo))
@@ -475,13 +489,24 @@ func Dspr2(uplo string, N int, alpha float64,
 // ===========================================================================
 // Matrix - Matrix
 
-func Dgemm(transA, transB string, M int, N int, K int,
+func Dgemm(transA, transB bool, M int, N int, K int,
 	alpha float64, A []float64, lda int, B []float64, ldb int, beta float64,
 	C []float64, ldc int) {
 
-	ctransA := C.CString(transA)
+	var astr, bstr string
+	if transA {
+		astr = "T"
+	} else {
+		astr = "N"
+	}
+	if transB {
+		bstr = "T"
+	} else {
+		bstr = "N"
+	}
+	ctransA := C.CString(astr)
 	defer C.free(unsafe.Pointer(ctransA))
-	ctransB := C.CString(transB)
+	ctransB := C.CString(bstr)
 	defer C.free(unsafe.Pointer(ctransB))
 
 	// protect against index out of bounds panics

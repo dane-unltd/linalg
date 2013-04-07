@@ -1,40 +1,50 @@
 package linalg
 
 import (
+	"fmt"
 	_ "github.com/dane-unltd/linalg/blasinit"
-	"github.com/dane-unltd/linalg/matrix"
+	. "github.com/dane-unltd/linalg/matrix"
 	"math"
 	"testing"
 )
 
 func Benchmark_MulDelayed(b *testing.B) {
-	A := matrix.RandN(1000, 1000)
-	B := matrix.RandN(1000, 1000)
-	C := matrix.RandN(1000, 1)
+	A := RandN(1000, 1000)
+	B := RandN(1000, 1000)
+	C := RandN(1000, 1)
 	for i := 0; i < b.N; i++ {
-		matrix.MulD(A, B, C)
+		MulD(A, B, C)
 	}
 }
 
 func Benchmark_MulInstant(b *testing.B) {
-	A := matrix.RandN(1000, 1000)
-	B := matrix.RandN(1000, 1000)
-	C := matrix.RandN(1000, 1)
+	A := RandN(1000, 1000)
+	B := RandN(1000, 1000)
+	C := RandN(1000, 1)
 	for i := 0; i < b.N; i++ {
-		matrix.MulD(matrix.MulD(A, B), C)
+		MulD(MulD(A, B), C)
 	}
 }
 
 func Test_MulD(t *testing.T) {
-	A := matrix.RandN(2, 600)
-	B := matrix.RandN(600, 3000)
-	C := matrix.RandN(3000, 100)
-	D := matrix.RandN(100, 1000)
-	E := matrix.RandN(1000, 10)
-	R1 := matrix.MulD(matrix.MulD(matrix.MulD(matrix.MulD(A, B), C), D), E)
-	R2 := matrix.MulD(A, B, C, D, E)
+	A := RandN(2, 600)
+	B := RandN(600, 3000)
+	C := RandN(3000, 100)
+	D := RandN(100, 1000)
+	E := RandN(1000, 10)
+	R1 := MulD(MulD(MulD(MulD(A, B), C), D), E)
+	R2 := MulD(A, B, C, D, E)
 
-	if math.Abs(matrix.Nrm2D(R1)-matrix.Nrm2D(R2)) > 0.0001 {
-		t.Error("MulD failed", matrix.Nrm2D(R1), matrix.Nrm2D(R2))
+	if math.Abs(Nrm2D(R1)-Nrm2D(R2)) > 0.0001 {
+		t.Error("MulD failed", Nrm2D(R1), Nrm2D(R2))
 	}
+
+	A = FromArrayD([]float64{1, -1, 0, 1}, true, 2, 2)
+
+	fmt.Println(A.SolveTriU(VecD{1, 1}))
+	fmt.Println(A.SolveTriL(VecD{1, 1}))
+	A.Tr()
+	fmt.Println(A.SolveTriU(VecD{1, 1}))
+	fmt.Println(A.SolveTriL(VecD{1, 1}))
+	fmt.Println(A.IsTr())
 }

@@ -9,6 +9,7 @@ type MatDable interface {
 	Stride() int
 
 	ArrayD() []float64
+	IsTr() bool
 }
 
 type MatD struct {
@@ -114,6 +115,17 @@ func FromArrayD(data []float64, useArray bool, dims ...int) *MatD {
 	return D
 }
 
+func (D *MatD) Copy() *MatD {
+	Dc := MatD{}
+	Dc.rows = D.rows
+	Dc.cols = D.cols
+	Dc.stride = D.stride
+	Dc.trans = D.trans
+	Dc.data = make([]float64, len(D.data))
+	copy(Dc.data, D.data)
+	return &Dc
+}
+
 func (D *MatD) Set(v float64, ixs ...int) {
 	ix := -1
 	if len(ixs) == 1 {
@@ -122,6 +134,48 @@ func (D *MatD) Set(v float64, ixs ...int) {
 		ix = ixs[0] + ixs[1]*D.stride
 	}
 	D.data[ix] = v
+}
+
+func (D *MatD) Col(ix int) VecD {
+	return VecD(D.data[ix*D.stride : (ix*D.stride + D.rows)])
+}
+
+func (D *MatD) SetCol(ix int, v VecD) {
+	if len(v) != D.rows {
+		panic("dimension missmatch")
+	}
+	if ix >= D.cols {
+		panic("index out of range")
+	}
+	copy(D.data[ix*D.stride:], v)
+}
+
+func (D *MatD) AddCol(v VecD) {
+	D.cols++
+	if len(v) != D.rows {
+		panic("dimension missmatch")
+	}
+
+	if len(D.data) < D.cols*D.stride {
+		data := make([]float64, D.cols*D.stride)
+		copy(data, D.data)
+		copy(data[(D.cols-1)*D.stride:], v)
+		D.data = data
+	} else {
+		copy(D.data[(D.cols-1)*D.stride:], v)
+	}
+}
+
+func (D *MatD) ApplyTo(v VecD) VecD {
+	res := make(VecD, D.rows)
+	Ops.Dgemv(D.IsTr(), D.rows, D.cols, 1, D.data, D.stride, v, 1, 0, res, 1)
+	return res
+}
+
+func (D *MatD) ApplyToTr(v VecD) VecD {
+	res := make(VecD, D.cols)
+	Ops.Dgemv(!D.IsTr(), D.rows, D.cols, 1, D.data, D.stride, v, 1, 0, res, 1)
+	return res
 }
 
 func (D *MatD) At(ixs ...int) float64 {

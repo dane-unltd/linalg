@@ -11,7 +11,7 @@ var Ops struct {
 	Daxpy  func(N int, alpha float64, X []float64, incX int, Y []float64, incY int)
 	Dscal  func(N int, alpha float64, X []float64, incX int)
 	//level 2
-	Dgemv func(transA string, M int, N int, alpha float64,
+	Dgemv func(transA bool, M int, N int, alpha float64,
 		A []float64, lda int, X []float64, incX int, beta float64,
 		Y []float64, incY int)
 	Dgbmv func(transA string, M int, N int, KL int, KU int,
@@ -24,7 +24,7 @@ var Ops struct {
 		N int, K int, A []float64, lda int, X []float64, incX int)
 	Dtpmv func(uplo, transA, diag string,
 		N int, Ap []float64, X []float64, incX int)
-	Dtrsv func(uplo, transA, diag string,
+	Dtrsv func(uplo string, transA bool, diag string,
 		N int, A []float64, lda int, X []float64, incX int)
 	Dtbsv func(uplo, transA, diag string,
 		N int, K int, A []float64, lda int, X []float64, incX int)
@@ -51,7 +51,7 @@ var Ops struct {
 	Dspr2 func(uplo string, N int, alpha float64,
 		X []float64, incX int, Y []float64, incY int, Ap []float64)
 	//level3
-	Dgemm func(tA string, tB string, m int, n int, k int,
+	Dgemm func(tA, tB bool, m int, n int, k int,
 		alpha float64, a []float64, lda int, b []float64, ldb int,
 		beta float64, c []float64, ldc int)
 	Dsymm func(side, uplo string, M int, N int,
@@ -71,4 +71,7 @@ var Ops struct {
 	//lapack
 	Dgesvd func(jobu, jobvt string, M, N int, A []float64, lda int, S []float64, U []float64,
 		ldu int, Vt []float64, ldvt int) int
+	Dgeqrf func(M, N int, A []float64, lda int, tau []float64) int
+	Dpotrf func(uplo string, N int, A []float64, lda int) int
+	Dsyevd func(jobz, uplo string, N int, A []float64, lda int, W []float64) int
 }

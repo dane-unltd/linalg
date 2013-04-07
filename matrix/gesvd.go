@@ -52,5 +52,12 @@ func SvdD(A MatDable, full ...bool) (S, U, Vt *MatD) {
 
 		S = Diag(Sa)
 	}
+	if A.IsTr() {
+		temp := U
+		U = Vt
+		Vt = temp
+		U.Tr()
+		Vt.Tr()
+	}
 	return
 }

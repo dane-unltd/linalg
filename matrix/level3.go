@@ -9,7 +9,7 @@ func (C *MatD) Dgemm(alpha, beta float64, A, B MatDable) *MatD {
 	strB := B.Stride()
 	strC := C.stride
 
-	Ops.Dgemm("N", "N", m, n, k, alpha, A.ArrayD(),
+	Ops.Dgemm(A.IsTr(), B.IsTr(), m, n, k, alpha, A.ArrayD(),
 		strA, B.ArrayD(), strB, beta, C.data, strC)
 	return C
 }
@@ -49,8 +49,10 @@ func MulD(M ...MatDable) *MatD {
 
 	var arrRight []float64
 	strRight := 0
+	trLeft := false
 	var arrLeft []float64
 	strLeft := 0
+	trRight := false
 
 	if numM-ixMinDim > 0 {
 		j := ixMinDim
@@ -61,6 +63,7 @@ func MulD(M ...MatDable) *MatD {
 		arr := M[j].ArrayD()
 		input = make([]float64, len(arr))
 		copy(input, arr)
+		trRight = M[j].IsTr()
 
 		j += 1
 
@@ -68,9 +71,10 @@ func MulD(M ...MatDable) *MatD {
 			if len(output) < m[ixMinDim]*n[j] {
 				output = make([]float64, m[0]*n[j])
 			}
-			Ops.Dgemm("N", "N", m[ixMinDim], n[j], n[j-1], 1, input,
+			Ops.Dgemm(trRight, M[j].IsTr(), m[ixMinDim], n[j], n[j-1], 1, input,
 				strideCurr, M[j].ArrayD(), stride[j], 0, output, m[0])
 
+			trRight = false
 			temp := input
 			input = output
 			output = temp
@@ -89,6 +93,7 @@ func MulD(M ...MatDable) *MatD {
 		arr := M[j].ArrayD()
 		input = make([]float64, len(arr))
 		copy(input, arr)
+		trLeft = M[j].IsTr()
 
 		j--
 
@@ -96,9 +101,10 @@ func MulD(M ...MatDable) *MatD {
 			if len(output) < m[j]*n[ixMinDim-1] {
 				output = make([]float64, m[j]*n[ixMinDim-1])
 			}
-			Ops.Dgemm("N", "N", m[j], n[ixMinDim-1], m[j+1], 1, M[j].ArrayD(),
+			Ops.Dgemm(M[j].IsTr(), trLeft, m[j], n[ixMinDim-1], m[j+1], 1, M[j].ArrayD(),
 				stride[j], input, strideCurr, 0, output, m[j])
 
+			trLeft = false
 			temp := input
 			input = output
 			output = temp
@@ -117,7 +123,7 @@ func MulD(M ...MatDable) *MatD {
 	}
 
 	output := make([]float64, m[0]*n[numM-1])
-	Ops.Dgemm("N", "N", m[0], n[numM-1], m[ixMinDim], 1, arrLeft,
+	Ops.Dgemm(trLeft, trRight, m[0], n[numM-1], m[ixMinDim], 1, arrLeft,
 		strLeft, arrRight, strRight, 0, output, m[0])
 
 	return FromArrayD(output, false, m[0], n[numM-1])
