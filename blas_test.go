@@ -5,6 +5,7 @@ import (
 	_ "github.com/dane-unltd/linalg/blasinit"
 	. "github.com/dane-unltd/linalg/matrix"
 	"math"
+	"math/rand"
 	"testing"
 )
 
@@ -26,25 +27,61 @@ func Benchmark_MulInstant(b *testing.B) {
 	}
 }
 
-func Test_MulD(t *testing.T) {
-	A := RandN(2, 600)
-	B := RandN(600, 3000)
-	C := RandN(3000, 100)
-	D := RandN(100, 1000)
-	E := RandN(1000, 10)
-	R1 := MulD(MulD(MulD(MulD(A, B), C), D), E)
-	R2 := MulD(A, B, C, D, E)
-
-	if math.Abs(Nrm2D(R1)-Nrm2D(R2)) > 0.0001 {
-		t.Error("MulD failed", Nrm2D(R1), Nrm2D(R2))
+func Benchmark_Add(b *testing.B) {
+	x := ZeroVec(10000)
+	for i := range x {
+		x[i] = rand.NormFloat64()
+	}
+	y := ZeroVec(10000)
+	for i := range y {
+		y[i] = rand.NormFloat64()
 	}
 
-	A = FromArrayD([]float64{1, -1, 0, 1}, true, 2, 2)
+	res := ZeroVec(10000)
 
-	fmt.Println(A.SolveTriU(VecD{1, 1}))
-	fmt.Println(A.SolveTriL(VecD{1, 1}))
-	A.Tr()
-	fmt.Println(A.SolveTriU(VecD{1, 1}))
-	fmt.Println(A.SolveTriL(VecD{1, 1}))
-	fmt.Println(A.IsTr())
+	for i := 0; i < b.N; i++ {
+		res.Add(x, y)
+	}
+}
+func Benchmark_AddaY(b *testing.B) {
+	x := ZeroVec(10000)
+	for i := range x {
+		x[i] = rand.NormFloat64()
+	}
+	y := ZeroVec(10000)
+	for i := range y {
+		y[i] = rand.NormFloat64()
+	}
+
+	for i := 0; i < b.N; i++ {
+		res := x.Copy()
+		res.AddaY(y)
+	}
+}
+
+func TestAdd(t *testing.T) {
+	x := ZeroVec(10000)
+	for i := range x {
+		x[i] = rand.NormFloat64()
+	}
+	y := ZeroVec(10000)
+	for i := range y {
+		y[i] = rand.NormFloat64()
+	}
+
+	res := ZeroVec(10000)
+
+	res.Add(x, y)
+	res2 := x.Copy()
+	res2.AddaY(y)
+	if math.Abs(res.Sub(res, res2).Nrm2()) > 0.0001 {
+		t.Error("MulD failed", res.Nrm2())
+	}
+}
+
+func Test_MulD(t *testing.T) {
+	A := FromArrayD([]float64{1, 2}, true, 1, 2)
+	B := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
+
+	fmt.Println(MulD(A, B))
 }

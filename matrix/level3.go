@@ -1,6 +1,6 @@
 package matrix
 
-//import "fmt"
+import "fmt"
 
 func (C *MatD) Dgemm(alpha, beta float64, A, B MatDable) *MatD {
 	m, k := A.Size()
@@ -69,10 +69,11 @@ func MulD(M ...MatDable) *MatD {
 
 		for j < numM {
 			if len(output) < m[ixMinDim]*n[j] {
-				output = make([]float64, m[0]*n[j])
+				output = make([]float64, m[ixMinDim]*n[j])
 			}
 			Ops.Dgemm(trRight, M[j].IsTr(), m[ixMinDim], n[j], n[j-1], 1, input,
-				strideCurr, M[j].ArrayD(), stride[j], 0, output, m[0])
+				strideCurr, M[j].ArrayD(), stride[j], 0, output,
+				m[ixMinDim])
 
 			trRight = false
 			temp := input
@@ -80,6 +81,7 @@ func MulD(M ...MatDable) *MatD {
 			output = temp
 			strideCurr = m[ixMinDim]
 			j++
+			fmt.Println("rightMul")
 		}
 		arrRight = input
 		strRight = strideCurr

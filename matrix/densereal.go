@@ -131,7 +131,11 @@ func (D *MatD) Set(v float64, ixs ...int) {
 	if len(ixs) == 1 {
 		ix = D.dataIx(ixs[0])
 	} else {
-		ix = ixs[0] + ixs[1]*D.stride
+		if D.trans {
+			ix = ixs[1] + ixs[0]*D.stride
+		} else {
+			ix = ixs[0] + ixs[1]*D.stride
+		}
 	}
 	D.data[ix] = v
 }
@@ -141,11 +145,16 @@ func (D *MatD) Col(ix int) VecD {
 }
 
 func (D *MatD) SetCol(ix int, v VecD) {
-	if len(v) != D.rows {
-		panic("dimension missmatch")
-	}
 	if ix >= D.cols {
 		panic("index out of range")
+	}
+	if v == nil {
+		copy(D.data[ix*D.stride:], D.data[(ix+1)*D.stride:])
+		D.cols--
+		D.data = D.data[:D.cols*D.stride]
+	}
+	if len(v) != D.rows {
+		panic("dimension missmatch")
 	}
 	copy(D.data[ix*D.stride:], v)
 }
@@ -166,24 +175,16 @@ func (D *MatD) AddCol(v VecD) {
 	}
 }
 
-func (D *MatD) ApplyTo(v VecD) VecD {
-	res := make(VecD, D.rows)
-	Ops.Dgemv(D.IsTr(), D.rows, D.cols, 1, D.data, D.stride, v, 1, 0, res, 1)
-	return res
-}
-
-func (D *MatD) ApplyToTr(v VecD) VecD {
-	res := make(VecD, D.cols)
-	Ops.Dgemv(!D.IsTr(), D.rows, D.cols, 1, D.data, D.stride, v, 1, 0, res, 1)
-	return res
-}
-
 func (D *MatD) At(ixs ...int) float64 {
 	ix := -1
 	if len(ixs) == 1 {
 		ix = D.dataIx(ixs[0])
 	} else {
-		ix = ixs[0] + ixs[1]*D.stride
+		if D.trans {
+			ix = ixs[1] + ixs[0]*D.stride
+		} else {
+			ix = ixs[0] + ixs[1]*D.stride
+		}
 	}
 	return D.data[ix]
 }

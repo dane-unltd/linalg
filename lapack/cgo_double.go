@@ -6,7 +6,7 @@
 
 package lapack
 
-// #cgo linux LDFLAGS: -L/usr/lib/libblas -L/usr/lib/lapack -llapack -lblas
+// #cgo linux LDFLAGS: -lmkl_rt
 // #cgo darwin LDFLAGS: -DYA_BLAS -DYA_LAPACK -DYA_BLASMULT -framework vecLib
 // #include <stdlib.h>
 // #include "lapack.h"

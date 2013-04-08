@@ -6,7 +6,7 @@
 
 package blas
 
-// #cgo LDFLAGS: -L/usr/lib/libblas -lblas
+// #cgo linux LDFLAGS: -lmkl_rt
 // #cgo darwin LDFLAGS: -DYA_BLAS -DYA_LAPACK -DYA_BLASMULT -framework vecLib
 // #include <stdlib.h>
 // #include "blas.h"
