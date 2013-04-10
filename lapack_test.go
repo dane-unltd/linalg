@@ -12,7 +12,7 @@ func TestSvd(t *testing.T) {
 	U := NewDenseD(2, 2)
 	Vt := NewDenseD(2, 2)
 
-	lapack.DenseD{A}.SvdD(S, U, Vt)
+	lapack.DenseDSvd(A, S, U, Vt)
 
 	A2 := NewDenseD(2, 2)
 	A3 := NewDenseD(2, 2)

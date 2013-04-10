@@ -1,19 +1,21 @@
 package blas
 
 import "github.com/dane-unltd/linalg/matrix"
+import "reflect"
 
-type Mulable interface {
-	ArrayD() []float64
-	Size() (int, int)
-	Stride() int
-	IsTr() bool
+//registering fast paths
+func init() {
+	tp := matrix.TypePair{
+		reflect.TypeOf((*matrix.DenseD)(nil)),
+		reflect.TypeOf((*matrix.DenseD)(nil)),
+	}
+	matrix.DenseDMul[tp] = DenseDMulAA
 }
 
-func (res DenseD) Mul(A, B matrix.Matrix) {
-	matrix.Mul(res, A, B)
-}
+func DenseDMulAA(res *matrix.DenseD, Am, Bm matrix.Matrix) {
+	A := Am.(*matrix.DenseD)
+	B := Bm.(*matrix.DenseD)
 
-func (res DenseD) MulDD(A, B *matrix.DenseD) {
 	m, n := res.Size()
 	_, k := A.Size()
 	Dgemm(A.IsTr(), B.IsTr(), m, n, k,

@@ -1,5 +1,19 @@
 package matrix
 
+import "reflect"
+
+var DenseDMul = make(map[TypePair]func(*DenseD, Matrix, Matrix))
+
+//registering fast paths
+func init() {
+	tp := TypePair{reflect.TypeOf((*DenseD)(nil)), reflect.TypeOf(DiagD(nil))}
+	DenseDMul[tp] = DenseDMulAD
+	tp = TypePair{reflect.TypeOf((*DenseD)(nil)), reflect.TypeOf(VecD(nil))}
+	DenseDMul[tp] = DenseDMulAv
+	tp = TypePair{reflect.TypeOf((*DenseD)(nil)), reflect.TypeOf((*DenseD)(nil))}
+	DenseDMul[tp] = DenseDMulAA
+}
+
 func (res *DenseD) Add(A, B Matrix) {
 	m, n := res.Size()
 	for i := 0; i < m; i++ {
@@ -19,26 +33,26 @@ func (res *DenseD) Sub(A, B Matrix) {
 }
 
 func (res *DenseD) Mul(A, B Matrix) {
-	Mul(res, A, B)
-}
+	m, n := res.Size()
+	ma, na := A.Size()
+	mb, nb := B.Size()
 
-func (res *DenseD) MulMDiag(A Matrix, D DiagD) {
-	for i := 0; i < res.rows; i++ {
-		for j := 0; j < res.cols; j++ {
-			res.Set(i, j, A.At(i, j)*D[i])
-		}
+	if ma != m || nb != n || na != mb {
+		panic("dimension missmatch")
+	}
+
+	tp := TypePair{reflect.TypeOf(A), reflect.TypeOf(B)}
+
+	op, ok := DenseDMul[tp]
+
+	if ok {
+		op(res, A, B)
+	} else {
+		res.MulMM(A, B)
 	}
 }
 
-func (res *DenseD) MulMVec(A Matrix, v VecD) {
-	for i := 0; i < res.rows; i++ {
-		res.data[i] = 0
-		for k := 0; k < len(v); k++ {
-			res.data[i] += A.At(i, k) * v[k]
-		}
-	}
-}
-
+//Slow general matrix multiplication
 func (res *DenseD) MulMM(A, B Matrix) {
 	_, K := A.Size()
 	for i := 0; i < res.rows; i++ {
@@ -52,6 +66,26 @@ func (res *DenseD) MulMM(A, B Matrix) {
 	}
 }
 
-func (res *DenseD) MulDD(A, B *DenseD) {
+//Faster specialized multiplications
+func DenseDMulAD(res *DenseD, A Matrix, B Matrix) {
+	D := B.(DiagD)
+	for i := 0; i < res.rows; i++ {
+		for j := 0; j < res.cols; j++ {
+			res.Set(i, j, A.At(i, j)*D[j])
+		}
+	}
+}
+
+func DenseDMulAv(res *DenseD, A Matrix, B Matrix) {
+	v := B.(VecD)
+	for i := 0; i < res.rows; i++ {
+		res.data[i] = 0
+		for k := 0; k < len(v); k++ {
+			res.data[i] += A.At(i, k) * v[k]
+		}
+	}
+}
+
+func DenseDMulAA(res *DenseD, A, B Matrix) {
 	res.MulMM(A, B)
 }

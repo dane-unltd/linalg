@@ -2,7 +2,7 @@ package linalg
 
 import (
 	"fmt"
-	"github.com/dane-unltd/linalg/blas"
+	//_ "github.com/dane-unltd/linalg/blas"
 	. "github.com/dane-unltd/linalg/matrix"
 	_ "math"
 	_ "math/rand"
@@ -15,15 +15,6 @@ func Benchmark_MatrixMul(b *testing.B) {
 	res := RandN(100, 100)
 	for i := 0; i < b.N; i++ {
 		res.Mul(A, B)
-	}
-}
-
-func Benchmark_BlasMul(b *testing.B) {
-	A := RandN(100, 100)
-	B := RandN(100, 100)
-	res := RandN(100, 100)
-	for i := 0; i < b.N; i++ {
-		blas.DenseD{res}.Mul(A, B)
 	}
 }
 
