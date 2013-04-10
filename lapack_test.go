@@ -1,25 +1,27 @@
 package linalg
 
 import (
-	"fmt"
-	_ "github.com/dane-unltd/linalg/blasinit"
-	_ "github.com/dane-unltd/linalg/lapackinit"
-	"github.com/dane-unltd/linalg/matrix"
-	"math"
+	"github.com/dane-unltd/linalg/lapack"
+	. "github.com/dane-unltd/linalg/matrix"
 	"testing"
 )
 
-func Test_SvdD(t *testing.T) {
-	A1 := matrix.FromArrayD([]float64{1, 2, 3, 4, 5, 6}, true, 3, 2)
+func TestSvd(t *testing.T) {
+	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
+	S := NewDiagD(2)
+	U := NewDenseD(2, 2)
+	Vt := NewDenseD(2, 2)
 
-	S, U, Vt := matrix.SvdD(A1.Copy(), false)
-	fmt.Println(U)
-	fmt.Println(S)
-	fmt.Println(Vt)
-	A2 := matrix.MulD(U, S, Vt)
-	fmt.Println(A1)
-	fmt.Println(A2)
-	if math.Abs(matrix.Nrm2D(A1)-matrix.Nrm2D(A2)) > 0.0001 {
-		t.Error("SvdD failed", matrix.Nrm2D(A1), matrix.Nrm2D(A2))
+	lapack.DenseDSvd(A, S, U, Vt)
+
+	A2 := NewDenseD(2, 2)
+	A3 := NewDenseD(2, 2)
+	A2.Mul(U, S)
+	A3.Mul(A2, Vt)
+
+	A2.Sub(A3, A)
+
+	if A2.VecView().Nrm2Sq() > 0.01 {
+		t.Error("wrong result", A3)
 	}
 }

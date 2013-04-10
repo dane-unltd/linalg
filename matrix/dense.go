@@ -20,7 +20,3 @@ func (D *dense) Stride() int {
 func (D *dense) IsTr() bool {
 	return D.trans
 }
-
-func (D *dense) Tr() {
-	D.trans = !D.trans
-}

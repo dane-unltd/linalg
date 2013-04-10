@@ -2,86 +2,30 @@ package linalg
 
 import (
 	"fmt"
-	_ "github.com/dane-unltd/linalg/blasinit"
+	//_ "github.com/dane-unltd/linalg/blas"
 	. "github.com/dane-unltd/linalg/matrix"
-	"math"
-	"math/rand"
+	_ "math"
+	_ "math/rand"
 	"testing"
 )
 
-func Benchmark_MulDelayed(b *testing.B) {
-	A := RandN(1000, 1000)
-	B := RandN(1000, 1000)
-	C := RandN(1000, 1)
+func Benchmark_MatrixMul(b *testing.B) {
+	A := RandN(100, 100)
+	B := RandN(100, 100)
+	res := RandN(100, 100)
 	for i := 0; i < b.N; i++ {
-		MulD(A, B, C)
+		res.Mul(A, B)
 	}
 }
 
-func Benchmark_MulInstant(b *testing.B) {
-	A := RandN(1000, 1000)
-	B := RandN(1000, 1000)
-	C := RandN(1000, 1)
-	for i := 0; i < b.N; i++ {
-		MulD(MulD(A, B), C)
-	}
-}
+func TestMatrixBlas(t *testing.T) {
+	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
 
-func Benchmark_Add(b *testing.B) {
-	x := ZeroVec(10000)
-	for i := range x {
-		x[i] = rand.NormFloat64()
-	}
-	y := ZeroVec(10000)
-	for i := range y {
-		y[i] = rand.NormFloat64()
-	}
+	D := DiagD{3, 4}
 
-	res := ZeroVec(10000)
+	res := NewDenseD(2, 2)
 
-	for i := 0; i < b.N; i++ {
-		res.Add(x, y)
-	}
-}
-func Benchmark_AddaY(b *testing.B) {
-	x := ZeroVec(10000)
-	for i := range x {
-		x[i] = rand.NormFloat64()
-	}
-	y := ZeroVec(10000)
-	for i := range y {
-		y[i] = rand.NormFloat64()
-	}
+	res.Mul(A, D)
 
-	for i := 0; i < b.N; i++ {
-		res := x.Copy()
-		res.AddaY(y)
-	}
-}
-
-func TestAdd(t *testing.T) {
-	x := ZeroVec(10000)
-	for i := range x {
-		x[i] = rand.NormFloat64()
-	}
-	y := ZeroVec(10000)
-	for i := range y {
-		y[i] = rand.NormFloat64()
-	}
-
-	res := ZeroVec(10000)
-
-	res.Add(x, y)
-	res2 := x.Copy()
-	res2.AddaY(y)
-	if math.Abs(res.Sub(res, res2).Nrm2()) > 0.0001 {
-		t.Error("MulD failed", res.Nrm2())
-	}
-}
-
-func Test_MulD(t *testing.T) {
-	A := FromArrayD([]float64{1, 2}, true, 1, 2)
-	B := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
-
-	fmt.Println(MulD(A, B))
+	fmt.Println(res)
 }
