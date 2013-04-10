@@ -23,3 +23,9 @@ func (D DiagD) Set(i, j int, v float64) {
 func (D DiagD) Size() (int, int) {
 	return len(D), len(D)
 }
+
+func (D DiagD) Copy() Matrix {
+	dNew := make(DiagD, len(D))
+	copy(dNew, D)
+	return dNew
+}

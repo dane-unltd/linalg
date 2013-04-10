@@ -3,6 +3,7 @@ package matrix
 type Muler interface {
 	MulMM(A, B Matrix)
 	Size() (int, int)
+	Copy() Matrix
 }
 
 type MulDDer interface {

@@ -17,7 +17,7 @@ func (v VecD) At(i, j int) float64 {
 	return v[i]
 }
 
-func (v VecD) Copy() VecD {
+func (v VecD) Copy() Matrix {
 	vNew := make(VecD, len(v))
 	copy(vNew, v)
 	return vNew

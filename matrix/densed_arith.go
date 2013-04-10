@@ -9,6 +9,15 @@ func (res *DenseD) Add(A, B Matrix) {
 	}
 }
 
+func (res *DenseD) Sub(A, B Matrix) {
+	m, n := res.Size()
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			res.Set(i, j, A.At(i, j)-B.At(i, j))
+		}
+	}
+}
+
 func (res *DenseD) Mul(A, B Matrix) {
 	Mul(res, A, B)
 }

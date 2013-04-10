@@ -81,7 +81,7 @@ func FromArrayD(data []float64, useArray bool, dims ...int) *DenseD {
 	return D
 }
 
-func (D *DenseD) Copy() *DenseD {
+func (D *DenseD) Copy() Matrix {
 	Dc := *D
 	Dc.data = make([]float64, len(D.data))
 	copy(Dc.data, D.data)

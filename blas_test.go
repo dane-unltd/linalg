@@ -1,7 +1,7 @@
 package linalg
 
 import (
-	_ "fmt"
+	"fmt"
 	"github.com/dane-unltd/linalg/blas"
 	. "github.com/dane-unltd/linalg/matrix"
 	_ "math"
@@ -28,21 +28,13 @@ func Benchmark_BlasMul(b *testing.B) {
 }
 
 func TestMatrixBlas(t *testing.T) {
+	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
 
-	A := RandN(100, 100)
-	B := RandN(100, 100)
+	D := DiagD{3, 4}
 
-	v := make(VecD, 100)
-	D := make(DiagD, 100)
+	res := NewDenseD(2, 2)
 
-	resMat := NewDenseD(100, 100)
-	resMat2 := NewDenseD(100, 1)
+	res.Mul(A, D)
 
-	blas.DenseD{resMat}.Mul(A, B)
-	blas.DenseD{resMat}.Mul(A, D)
-	blas.DenseD{resMat2}.Mul(A, v)
-
-	resMat.Mul(A, B)
-	resMat.Mul(A, D)
-	resMat2.Mul(A, v)
+	fmt.Println(res)
 }
