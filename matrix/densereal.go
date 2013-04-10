@@ -152,6 +152,7 @@ func (D *MatD) SetCol(ix int, v VecD) {
 		copy(D.data[ix*D.stride:], D.data[(ix+1)*D.stride:])
 		D.cols--
 		D.data = D.data[:D.cols*D.stride]
+		return
 	}
 	if len(v) != D.rows {
 		panic("dimension missmatch")
