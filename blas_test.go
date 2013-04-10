@@ -1,87 +1,50 @@
 package linalg
 
 import (
-	"fmt"
-	_ "github.com/dane-unltd/linalg/blasinit"
+	_ "fmt"
+	"github.com/dane-unltd/linalg/blas"
 	. "github.com/dane-unltd/linalg/matrix"
-	"math"
-	"math/rand"
+	_ "math"
+	_ "math/rand"
 	"testing"
 )
 
-func Benchmark_MulDelayed(b *testing.B) {
+func Benchmark_MatrixMul(b *testing.B) {
 	A := RandN(1000, 1000)
 	B := RandN(1000, 1000)
-	C := RandN(1000, 1)
+	res := RandN(1000, 1000)
 	for i := 0; i < b.N; i++ {
-		MulD(A, B, C)
+		res.Mul(A, B)
 	}
 }
 
-func Benchmark_MulInstant(b *testing.B) {
+func Benchmark_BlasMul(b *testing.B) {
 	A := RandN(1000, 1000)
 	B := RandN(1000, 1000)
-	C := RandN(1000, 1)
+	res := blas.DenseD{RandN(1000, 1000)}
 	for i := 0; i < b.N; i++ {
-		MulD(MulD(A, B), C)
+		res.Mul(A, B)
 	}
 }
 
-func Benchmark_Add(b *testing.B) {
-	x := ZeroVec(10000)
-	for i := range x {
-		x[i] = rand.NormFloat64()
-	}
-	y := ZeroVec(10000)
-	for i := range y {
-		y[i] = rand.NormFloat64()
-	}
+func TestMatrixBlas(t *testing.T) {
 
-	res := ZeroVec(10000)
+	A := RandN(100, 100)
+	B := RandN(100, 100)
 
-	for i := 0; i < b.N; i++ {
-		res.Add(x, y)
-	}
-}
-func Benchmark_AddaY(b *testing.B) {
-	x := ZeroVec(10000)
-	for i := range x {
-		x[i] = rand.NormFloat64()
-	}
-	y := ZeroVec(10000)
-	for i := range y {
-		y[i] = rand.NormFloat64()
-	}
+	v := make(VecD, 100)
+	D := make(DiagD, 100)
 
-	for i := 0; i < b.N; i++ {
-		res := x.Copy()
-		res.AddaY(y)
-	}
-}
+	resBlas := blas.DenseD{NewDenseD(100, 100)}
+	resMat := NewDenseD(100, 100)
+	resBlas2 := blas.DenseD{NewDenseD(100, 1)}
+	resMat2 := NewDenseD(100, 1)
 
-func TestAdd(t *testing.T) {
-	x := ZeroVec(10000)
-	for i := range x {
-		x[i] = rand.NormFloat64()
-	}
-	y := ZeroVec(10000)
-	for i := range y {
-		y[i] = rand.NormFloat64()
-	}
+	resBlas.Mul(A, B)
+	resBlas.Mul(A, D)
+	resBlas2.Mul(A, v)
 
-	res := ZeroVec(10000)
-
-	res.Add(x, y)
-	res2 := x.Copy()
-	res2.AddaY(y)
-	if math.Abs(res.Sub(res, res2).Nrm2()) > 0.0001 {
-		t.Error("MulD failed", res.Nrm2())
-	}
-}
-
-func Test_MulD(t *testing.T) {
-	A := FromArrayD([]float64{1, 2}, true, 1, 2)
-	B := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
-
-	fmt.Println(MulD(A, B))
+	resMat.Mul(A, B)
+	resMat.Mul(A, D)
+	resMat2.Mul(A, v)
 }
