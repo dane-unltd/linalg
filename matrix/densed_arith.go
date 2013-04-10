@@ -14,7 +14,6 @@ func (res *DenseD) Mul(A, B Matrix) {
 }
 
 func (res *DenseD) MulMDiag(A Matrix, D DiagD) {
-	println("matrix diag")
 	for i := 0; i < res.rows; i++ {
 		for j := 0; j < res.cols; j++ {
 			res.Set(i, j, A.At(i, j)*D[i])
@@ -23,7 +22,6 @@ func (res *DenseD) MulMDiag(A Matrix, D DiagD) {
 }
 
 func (res *DenseD) MulMVec(A Matrix, v VecD) {
-	println("matrix vec")
 	for i := 0; i < res.rows; i++ {
 		res.data[i] = 0
 		for k := 0; k < len(v); k++ {
@@ -33,7 +31,6 @@ func (res *DenseD) MulMVec(A Matrix, v VecD) {
 }
 
 func (res *DenseD) MulMM(A, B Matrix) {
-	println("matrix.MulMM")
 	_, K := A.Size()
 	for i := 0; i < res.rows; i++ {
 		for j := 0; j < res.cols; j++ {
@@ -47,6 +44,5 @@ func (res *DenseD) MulMM(A, B Matrix) {
 }
 
 func (res *DenseD) MulDD(A, B *DenseD) {
-	println("matrix.MulDD")
 	res.MulMM(A, B)
 }

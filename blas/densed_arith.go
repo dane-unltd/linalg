@@ -9,12 +9,11 @@ type Mulable interface {
 	IsTr() bool
 }
 
-func (res *DenseD) Mul(A, B matrix.Matrix) {
+func (res DenseD) Mul(A, B matrix.Matrix) {
 	matrix.Mul(res, A, B)
 }
 
-func (res *DenseD) MulDD(A, B *matrix.DenseD) {
-	println("blas.MulDD")
+func (res DenseD) MulDD(A, B *matrix.DenseD) {
 	m, n := res.Size()
 	_, k := A.Size()
 	Dgemm(A.IsTr(), B.IsTr(), m, n, k,
