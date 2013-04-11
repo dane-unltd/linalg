@@ -1,6 +1,7 @@
 package matrix
 
 import "reflect"
+import "fmt"
 
 var DenseDMul = make(map[TypePair]func(*DenseD, Matrix, Matrix))
 
@@ -38,6 +39,7 @@ func (res *DenseD) Mul(A, B Matrix) {
 	mb, nb := B.Size()
 
 	if ma != m || nb != n || na != mb {
+		fmt.Println(m, n, ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
 

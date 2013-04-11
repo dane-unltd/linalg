@@ -29,7 +29,7 @@ func (v VecD) Equals(M Matrix) bool {
 		return false
 	}
 	for i := range v {
-		if v[i] != M.At(i, 1) {
+		if v[i] != M.At(i, 0) {
 			return false
 		}
 	}
