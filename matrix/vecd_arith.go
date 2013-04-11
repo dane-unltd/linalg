@@ -47,7 +47,7 @@ func (v VecD) Asum() float64 {
 }
 
 func (v VecD) Idmax() int {
-	max := 0.0
+	max := v[0]
 	ixMax := 0
 	for i, val := range v {
 		if val > max {
@@ -104,7 +104,7 @@ func DotGo(a, b VecD) float64 {
 	}
 	res := 0.0
 	for i := range a {
-		res = a[i] * b[i]
+		res += a[i] * b[i]
 	}
 	return res
 }
