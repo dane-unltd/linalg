@@ -1,6 +1,7 @@
 package matrix
 
 import "math/rand"
+import "github.com/dane-unltd/linalg/blas"
 
 type DenseD struct {
 	dense
@@ -21,6 +22,7 @@ func NewDenseD(dims ...int) *DenseD {
 	D.rows = m
 	D.cols = n
 	D.stride = m
+	D.trans = blas.NoTrans
 
 	D.data = make([]float64, n*m)
 	return D
@@ -99,7 +101,13 @@ func (D *DenseD) Set(i, j int, v float64) {
 }
 
 func (D *DenseD) Tr() *DenseD {
-	D.trans = !D.trans
+	if D.IsTr() {
+		D.trans = blas.NoTrans
+		return D
+	}
+
+	D.trans = blas.Trans
+
 	return D
 }
 
@@ -148,7 +156,7 @@ func (D *DenseD) ArrayD() []float64 {
 }
 
 func (D *DenseD) dataIx(i, j int) int {
-	if D.trans {
+	if D.IsTr() {
 		return j + i*D.stride
 	}
 	return i + j*D.stride

@@ -1,19 +1,18 @@
 package linalg
 
 import (
+	cblas "code.google.com/p/biogo.blas"
 	"fmt"
-	_ "github.com/dane-unltd/linalg/blas"
+	"github.com/dane-unltd/linalg/blas"
 	. "github.com/dane-unltd/linalg/matrix"
-	"github.com/harrydb/go/matrix"
-	"github.com/ziutek/blas"
-	_ "math"
-	_ "math/rand"
+	goblas "github.com/ziutek/blas"
 	"testing"
 )
 
-func Benchmark_MatrixMul(b *testing.B) {
+var n = 50
+
+func Benchmark_MatrixMulGo(b *testing.B) {
 	b.StopTimer()
-	n := 2000
 	A := RandN(n, n)
 	B := RandN(n, n)
 	res := RandN(n, n)
@@ -23,17 +22,26 @@ func Benchmark_MatrixMul(b *testing.B) {
 	}
 }
 
-func Benchmark_MatrixMulBlasGo(b *testing.B) {
+func Benchmark_MatrixMulBlas(b *testing.B) {
 	b.StopTimer()
-	n := 2000
 	A := RandN(n, n)
 	B := RandN(n, n)
-	Am := matrix.New(n, n, A.VecView())
-	Bm := matrix.New(n, n, B.VecView())
+	res := RandN(n, n)
+	blas.Dgemm = cblas.Dgemm
 	b.StartTimer()
-
 	for i := 0; i < b.N; i++ {
-		matrix.MulDouglas(Am, Bm)
+		res.Mul(A, B)
+	}
+}
+func Benchmark_MatrixMulBlasGo(b *testing.B) {
+	b.StopTimer()
+	A := RandN(n, n)
+	B := RandN(n, n)
+	res := RandN(n, n)
+	blas.Dgemm = goblas.Dgemm
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		res.Mul(A, B)
 	}
 }
 
@@ -45,12 +53,22 @@ func Benchmark_Nrm2Go(b *testing.B) {
 		v.Nrm2()
 	}
 }
+func Benchmark_Nrm2Blas(b *testing.B) {
+	A := RandN(100, 100)
+	v := A.VecView()
+	blas.Dnrm2 = cblas.Dnrm2
+
+	for i := 0; i < b.N; i++ {
+		v.Nrm2()
+	}
+}
 func Benchmark_Nrm2GoFast(b *testing.B) {
 	A := RandN(100, 100)
 	v := A.VecView()
+	blas.Dnrm2 = goblas.Dnrm2
 
 	for i := 0; i < b.N; i++ {
-		blas.Dnrm2(len(v), v, 1)
+		v.Nrm2()
 	}
 }
 

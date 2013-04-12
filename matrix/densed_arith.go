@@ -1,19 +1,8 @@
 package matrix
 
-import "reflect"
 import "fmt"
 
-var DenseDMul = make(map[TypePair]func(*DenseD, Matrix, Matrix))
-
-//registering fast paths
-func init() {
-	tp := TypePair{reflect.TypeOf((*DenseD)(nil)), reflect.TypeOf(DiagD(nil))}
-	DenseDMul[tp] = DenseDMulAD
-	tp = TypePair{reflect.TypeOf((*DenseD)(nil)), reflect.TypeOf(VecD(nil))}
-	DenseDMul[tp] = DenseDMulAv
-	tp = TypePair{reflect.TypeOf((*DenseD)(nil)), reflect.TypeOf((*DenseD)(nil))}
-	DenseDMul[tp] = DenseDMulAA
-}
+import "github.com/dane-unltd/linalg/blas"
 
 func (res *DenseD) Add(A, B Matrix) {
 	m, n := res.Size()
@@ -43,15 +32,23 @@ func (res *DenseD) Mul(A, B Matrix) {
 		panic("dimension missmatch")
 	}
 
-	tp := TypePair{reflect.TypeOf(A), reflect.TypeOf(B)}
-
-	op, ok := DenseDMul[tp]
-
-	if ok {
-		op(res, A, B)
-	} else {
-		res.MulMM(A, B)
+	switch A := A.(type) {
+	case *DenseD:
+		switch B := B.(type) {
+		case *DenseD:
+			blas.Dgemm(int(blas.ColMajor), int(A.trans), int(B.trans), m, n, na,
+				1, A.data, A.stride, B.data, B.stride, 0,
+				res.data, res.stride)
+			return
+		case VecD:
+			blas.Dgemm(int(blas.ColMajor), int(A.trans), int(blas.NoTrans),
+				m, n, na, 1, A.data, A.stride, B, len(B), 0,
+				res.data, res.stride)
+			return
+		}
 	}
+
+	res.MulMM(A, B)
 }
 
 //Slow general matrix multiplication
@@ -66,28 +63,4 @@ func (res *DenseD) MulMM(A, B Matrix) {
 			}
 		}
 	}
-}
-
-//Faster specialized multiplications
-func DenseDMulAD(res *DenseD, A Matrix, B Matrix) {
-	D := B.(DiagD)
-	for i := 0; i < res.rows; i++ {
-		for j := 0; j < res.cols; j++ {
-			res.Set(i, j, A.At(i, j)*D[j])
-		}
-	}
-}
-
-func DenseDMulAv(res *DenseD, A Matrix, B Matrix) {
-	v := B.(VecD)
-	for i := 0; i < res.rows; i++ {
-		res.data[i] = 0
-		for k := 0; k < len(v); k++ {
-			res.data[i] += A.At(i, k) * v[k]
-		}
-	}
-}
-
-func DenseDMulAA(res *DenseD, A, B Matrix) {
-	res.MulMM(A, B)
 }
