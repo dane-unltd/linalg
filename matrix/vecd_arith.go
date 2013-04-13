@@ -1,6 +1,6 @@
 package matrix
 
-import "github.com/dane-unltd/linalg/blas"
+import blas "github.com/dane-unltd/linalg/blasops"
 
 func (res VecD) Normalize(v VecD) VecD {
 	blas.Dcopy(len(res), v, 1, res, 1)
@@ -59,8 +59,9 @@ func (res VecD) Scal(a float64) VecD {
 	return res
 }
 
-func (res VecD) Axpy(a float64, x VecD) {
+func (res VecD) Axpy(a float64, x VecD) VecD {
 	blas.Daxpy(len(res), a, x, 1, res, 1)
+	return res
 }
 
 func Ddot(a, b VecD) float64 {

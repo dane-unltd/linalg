@@ -1,4 +1,14 @@
-package blas
+package blasops
+
+type SrotmParams struct {
+	Flag float32
+	H    [4]float32 // Column-major 2 by 2 matrix.
+}
+
+type DrotmParams struct {
+	Flag float64
+	H    [4]float64 // Column-major 2 by 2 matrix.
+}
 
 type Order int
 

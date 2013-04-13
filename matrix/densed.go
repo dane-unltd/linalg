@@ -1,7 +1,7 @@
 package matrix
 
 import "math/rand"
-import "github.com/dane-unltd/linalg/blas"
+import blas "github.com/dane-unltd/linalg/blasops"
 
 type DenseD struct {
 	dense
@@ -75,6 +75,7 @@ func FromArrayD(data []float64, useArray bool, dims ...int) *DenseD {
 		D.rows = m
 		D.cols = n
 		D.stride = m
+		D.trans = blas.NoTrans
 		D.data = data
 	} else {
 		D = NewDenseD(dims...)
@@ -83,11 +84,19 @@ func FromArrayD(data []float64, useArray bool, dims ...int) *DenseD {
 	return D
 }
 
-func (D *DenseD) Copy() Matrix {
+func (D *DenseD) Copy() interface{} {
 	Dc := *D
 	Dc.data = make([]float64, len(D.data))
 	copy(Dc.data, D.data)
 	return &Dc
+}
+
+func (D *DenseD) Equals(x interface{}) bool {
+	D2, ok := x.(*DenseD)
+	if !ok {
+		return ok
+	}
+	return D.VecView().Equals(D2.VecView())
 }
 
 func (D *DenseD) At(i, j int) float64 {
@@ -100,7 +109,7 @@ func (D *DenseD) Set(i, j int, v float64) {
 	D.data[ix] = v
 }
 
-func (D *DenseD) Tr() *DenseD {
+func (D *DenseD) T() *DenseD {
 	if D.IsTr() {
 		D.trans = blas.NoTrans
 		return D

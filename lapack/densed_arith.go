@@ -4,10 +4,10 @@ import "github.com/dane-unltd/linalg/matrix"
 
 func DenseDSvd(D *matrix.DenseD, S matrix.DiagD, U, Vt *matrix.DenseD) {
 	if U.IsTr() {
-		U.Tr()
+		U.T()
 	}
 	if Vt.IsTr() {
-		Vt.Tr()
+		Vt.T()
 	}
 
 	m, n := D.Size()

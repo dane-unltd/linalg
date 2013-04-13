@@ -2,7 +2,7 @@ package matrix
 
 import "fmt"
 
-import "github.com/dane-unltd/linalg/blas"
+import blas "github.com/dane-unltd/linalg/blasops"
 
 func (res *DenseD) Add(A, B Matrix) {
 	m, n := res.Size()
@@ -36,12 +36,12 @@ func (res *DenseD) Mul(A, B Matrix) {
 	case *DenseD:
 		switch B := B.(type) {
 		case *DenseD:
-			blas.Dgemm(int(blas.ColMajor), int(A.trans), int(B.trans), m, n, na,
+			blas.Dgemm(blas.ColMajor, A.trans, B.trans, m, n, na,
 				1, A.data, A.stride, B.data, B.stride, 0,
 				res.data, res.stride)
 			return
 		case VecD:
-			blas.Dgemm(int(blas.ColMajor), int(A.trans), int(blas.NoTrans),
+			blas.Dgemm((blas.ColMajor), (A.trans), (blas.NoTrans),
 				m, n, na, 1, A.data, A.stride, B, len(B), 0,
 				res.data, res.stride)
 			return
