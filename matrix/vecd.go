@@ -17,13 +17,19 @@ func (v VecD) At(i, j int) float64 {
 	return v[i]
 }
 
-func (v VecD) Copy() Matrix {
+func (v VecD) Copy() interface{} {
 	vNew := make(VecD, len(v))
 	copy(vNew, v)
 	return vNew
 }
 
-func (v VecD) Equals(M Matrix) bool {
+func (v VecD) Equals(x interface{}) bool {
+
+	M, ok := x.(Matrix)
+	if !ok {
+		return ok
+	}
+
 	m, n := M.Size()
 	if n > 1 || m != len(v) {
 		return false
