@@ -1,4 +1,4 @@
-package goblas
+package cblas
 
 import "github.com/dane-unltd/linalg/blas"
 

@@ -3,20 +3,20 @@ package matrix
 import "github.com/dane-unltd/linalg/blas"
 
 func (res VecFloat64) Normalize(v VecFloat64) VecFloat64 {
-	blas.Dcopy(len(res), v, 1, res, 1)
+	blas.Copy(len(res), v, 1, res, 1)
 	return res.Scal(1 / v.Nrm2())
 }
 
 func (v VecFloat64) Nrm2Sq() float64 {
-	return blas.Ddot(len(v), v, 1, v, 1)
+	return blas.Dot(len(v), v, 1, v, 1)
 }
 
 func (v VecFloat64) Nrm2() float64 {
-	return blas.Dnrm2(len(v), v, 1)
+	return blas.Nrm2(len(v), v, 1)
 }
 
 func (v VecFloat64) Asum() float64 {
-	return blas.Dasum(len(v), v, 1)
+	return blas.Asum(len(v), v, 1)
 }
 
 func (v VecFloat64) Imax() int {
@@ -55,12 +55,12 @@ func (res VecFloat64) MulH(a, b VecFloat64) {
 }
 
 func (res VecFloat64) Scal(a float64) VecFloat64 {
-	blas.Dscal(len(res), a, res, 1)
+	blas.Scal(len(res), a, res, 1)
 	return res
 }
 
 func (res VecFloat64) Axpy(a float64, x VecFloat64) VecFloat64 {
-	blas.Daxpy(len(res), a, x, 1, res, 1)
+	blas.Axpy(len(res), a, x, 1, res, 1)
 	return res
 }
 
@@ -68,7 +68,7 @@ func Ddot(a, b VecFloat64) float64 {
 	if len(a) != len(b) {
 		panic("dimension missmatch")
 	}
-	return blas.Ddot(len(a), a, 1, b, 1)
+	return blas.Dot(len(a), a, 1, b, 1)
 }
 
 func (res VecFloat64) Add(a, b VecFloat64) VecFloat64 {
