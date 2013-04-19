@@ -3,12 +3,12 @@ package matrix
 import "math/rand"
 import "github.com/dane-unltd/linalg/blas"
 
-type DenseD struct {
+type DenseFloat64 struct {
 	dense
 	data []float64
 }
 
-func NewDenseD(dims ...int) *DenseD {
+func NewDenseFloat64(dims ...int) *DenseFloat64 {
 	if len(dims) == 0 {
 		return nil
 	}
@@ -18,7 +18,7 @@ func NewDenseD(dims ...int) *DenseD {
 		n = dims[1]
 	}
 
-	D := &DenseD{}
+	D := &DenseFloat64{}
 	D.rows = m
 	D.cols = n
 	D.stride = m
@@ -28,31 +28,31 @@ func NewDenseD(dims ...int) *DenseD {
 	return D
 }
 
-func Eye(n int) *DenseD {
-	D := NewDenseD(n)
+func Eye(n int) *DenseFloat64 {
+	D := NewDenseFloat64(n)
 	for i := 0; i < n; i++ {
 		D.Set(i, i, 1)
 	}
 	return D
 }
 
-func RandU(dims ...int) *DenseD {
-	D := NewDenseD(dims...)
+func RandU(dims ...int) *DenseFloat64 {
+	D := NewDenseFloat64(dims...)
 	for i := range D.data {
 		D.data[i] = rand.Float64()
 	}
 	return D
 }
 
-func RandN(dims ...int) *DenseD {
-	D := NewDenseD(dims...)
+func RandN(dims ...int) *DenseFloat64 {
+	D := NewDenseFloat64(dims...)
 	for i := range D.data {
 		D.data[i] = rand.NormFloat64()
 	}
 	return D
 }
 
-func FromArrayD(data []float64, useArray bool, dims ...int) *DenseD {
+func FromArrayD(data []float64, useArray bool, dims ...int) *DenseFloat64 {
 	num := 1
 	for _, v := range dims {
 		num *= v
@@ -61,7 +61,7 @@ func FromArrayD(data []float64, useArray bool, dims ...int) *DenseD {
 		panic("array length mismatch")
 	}
 
-	var D *DenseD
+	var D *DenseFloat64
 	if useArray {
 		if len(dims) == 0 {
 			return nil
@@ -71,45 +71,45 @@ func FromArrayD(data []float64, useArray bool, dims ...int) *DenseD {
 		if len(dims) > 1 {
 			n = dims[1]
 		}
-		D = &DenseD{}
+		D = &DenseFloat64{}
 		D.rows = m
 		D.cols = n
 		D.stride = m
 		D.trans = blas.NoTrans
 		D.data = data
 	} else {
-		D = NewDenseD(dims...)
+		D = NewDenseFloat64(dims...)
 		copy(D.data, data)
 	}
 	return D
 }
 
-func (D *DenseD) Copy() interface{} {
+func (D *DenseFloat64) Copy() interface{} {
 	Dc := *D
 	Dc.data = make([]float64, len(D.data))
 	copy(Dc.data, D.data)
 	return &Dc
 }
 
-func (D *DenseD) Equals(x interface{}) bool {
-	D2, ok := x.(*DenseD)
+func (D *DenseFloat64) Equals(x interface{}) bool {
+	D2, ok := x.(*DenseFloat64)
 	if !ok {
 		return ok
 	}
 	return D.VecView().Equals(D2.VecView())
 }
 
-func (D *DenseD) At(i, j int) float64 {
+func (D *DenseFloat64) At(i, j int) float64 {
 	ix := D.dataIx(i, j)
 	return D.data[ix]
 }
 
-func (D *DenseD) Set(i, j int, v float64) {
+func (D *DenseFloat64) Set(i, j int, v float64) {
 	ix := D.dataIx(i, j)
 	D.data[ix] = v
 }
 
-func (D *DenseD) T() *DenseD {
+func (D *DenseFloat64) T() *DenseFloat64 {
 	if D.IsTr() {
 		D.trans = blas.NoTrans
 		return D
@@ -120,15 +120,15 @@ func (D *DenseD) T() *DenseD {
 	return D
 }
 
-func (D *DenseD) ColView(ix int) VecD {
-	return VecD(D.data[ix*D.stride : (ix*D.stride + D.rows)])
+func (D *DenseFloat64) ColView(ix int) VecFloat64 {
+	return VecFloat64(D.data[ix*D.stride : (ix*D.stride + D.rows)])
 }
 
-func (D *DenseD) VecView() VecD {
-	return VecD(D.data)
+func (D *DenseFloat64) VecView() VecFloat64 {
+	return VecFloat64(D.data)
 }
 
-func (D *DenseD) SetCol(ix int, v VecD) {
+func (D *DenseFloat64) SetCol(ix int, v VecFloat64) {
 	if ix >= D.cols {
 		panic("index out of range")
 	}
@@ -144,7 +144,7 @@ func (D *DenseD) SetCol(ix int, v VecD) {
 	copy(D.data[ix*D.stride:], v)
 }
 
-func (D *DenseD) AddCol(v VecD) {
+func (D *DenseFloat64) AddCol(v VecFloat64) {
 	D.cols++
 	if len(v) != D.rows {
 		panic("dimension missmatch")
@@ -160,11 +160,11 @@ func (D *DenseD) AddCol(v VecD) {
 	}
 }
 
-func (D *DenseD) ArrayD() []float64 {
+func (D *DenseFloat64) Array() []float64 {
 	return D.data
 }
 
-func (D *DenseD) dataIx(i, j int) int {
+func (D *DenseFloat64) dataIx(i, j int) int {
 	if D.IsTr() {
 		return j + i*D.stride
 	}

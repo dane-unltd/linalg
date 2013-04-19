@@ -2,24 +2,24 @@ package matrix
 
 import "github.com/dane-unltd/linalg/blas"
 
-func (res VecD) Normalize(v VecD) VecD {
+func (res VecFloat64) Normalize(v VecFloat64) VecFloat64 {
 	blas.Dcopy(len(res), v, 1, res, 1)
 	return res.Scal(1 / v.Nrm2())
 }
 
-func (v VecD) Nrm2Sq() float64 {
+func (v VecFloat64) Nrm2Sq() float64 {
 	return blas.Ddot(len(v), v, 1, v, 1)
 }
 
-func (v VecD) Nrm2() float64 {
+func (v VecFloat64) Nrm2() float64 {
 	return blas.Dnrm2(len(v), v, 1)
 }
 
-func (v VecD) Asum() float64 {
+func (v VecFloat64) Asum() float64 {
 	return blas.Dasum(len(v), v, 1)
 }
 
-func (v VecD) Imax() int {
+func (v VecFloat64) Imax() int {
 	max := v[0]
 	ixMax := 0
 	for i, val := range v {
@@ -31,7 +31,7 @@ func (v VecD) Imax() int {
 	return ixMax
 }
 
-func (res VecD) Max(v VecD, a float64) VecD {
+func (res VecFloat64) Max(v VecFloat64, a float64) VecFloat64 {
 	if len(res) != len(v) {
 		panic("dimension missmatch")
 	}
@@ -45,7 +45,7 @@ func (res VecD) Max(v VecD, a float64) VecD {
 	return res
 }
 
-func (res VecD) MulH(a, b VecD) {
+func (res VecFloat64) MulH(a, b VecFloat64) {
 	if len(res) != len(a) || len(res) != len(b) {
 		panic("dimension missmatch")
 	}
@@ -54,24 +54,24 @@ func (res VecD) MulH(a, b VecD) {
 	}
 }
 
-func (res VecD) Scal(a float64) VecD {
+func (res VecFloat64) Scal(a float64) VecFloat64 {
 	blas.Dscal(len(res), a, res, 1)
 	return res
 }
 
-func (res VecD) Axpy(a float64, x VecD) VecD {
+func (res VecFloat64) Axpy(a float64, x VecFloat64) VecFloat64 {
 	blas.Daxpy(len(res), a, x, 1, res, 1)
 	return res
 }
 
-func Ddot(a, b VecD) float64 {
+func Ddot(a, b VecFloat64) float64 {
 	if len(a) != len(b) {
 		panic("dimension missmatch")
 	}
 	return blas.Ddot(len(a), a, 1, b, 1)
 }
 
-func (res VecD) Add(a, b VecD) VecD {
+func (res VecFloat64) Add(a, b VecFloat64) VecFloat64 {
 	if len(res) != len(a) || len(res) != len(b) {
 		panic("dimension missmatch")
 	}
@@ -82,7 +82,7 @@ func (res VecD) Add(a, b VecD) VecD {
 	return res
 }
 
-func (res VecD) Sub(a, b VecD) VecD {
+func (res VecFloat64) Sub(a, b VecFloat64) VecFloat64 {
 	if len(res) != len(a) || len(res) != len(b) {
 		panic("dimension missmatch")
 	}
@@ -93,7 +93,7 @@ func (res VecD) Sub(a, b VecD) VecD {
 	return res
 }
 
-func (res VecD) Cross(a, b VecD) VecD {
+func (res VecFloat64) Cross(a, b VecFloat64) VecFloat64 {
 	if len(res) != 3 || len(a) != 3 || len(b) != 3 {
 		panic("All vectors must have length 3")
 	}
@@ -103,7 +103,7 @@ func (res VecD) Cross(a, b VecD) VecD {
 	return res
 }
 
-func (res VecD) Neg(v VecD) VecD {
+func (res VecFloat64) Neg(v VecFloat64) VecFloat64 {
 	if len(res) != len(v) {
 		panic("dimension missmatch")
 	}
@@ -113,7 +113,7 @@ func (res VecD) Neg(v VecD) VecD {
 	return res
 }
 
-func (res VecD) Mul(A, B Matrix) {
+func (res VecFloat64) Mul(A, B Matrix) {
 	resMat := FromArrayD(res, true, len(res), 1)
 	resMat.Mul(A, B)
 }

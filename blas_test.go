@@ -3,22 +3,24 @@ package linalg
 import (
 	cblas "code.google.com/p/biogo.blas"
 	"fmt"
-	_ "github.com/dane-unltd/linalg/blas"
-	"github.com/dane-unltd/linalg/blasops"
+	"github.com/dane-unltd/linalg/blas"
+	_ "github.com/dane-unltd/linalg/goblas"
 	. "github.com/dane-unltd/linalg/matrix"
 	"testing"
 )
 
-var n = 25
+var n = 300
 
 func Benchmark_MatrixMulGo(b *testing.B) {
 	b.StopTimer()
 	A := RandN(n, n)
 	B := RandN(n, n)
+	D := DiagFloat64(B.Array())
+	D = D[:n]
 	res := RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		res.Mul(A, B)
+		res.Mul(A, D)
 	}
 }
 
@@ -26,11 +28,16 @@ func Benchmark_MatrixMulBlas(b *testing.B) {
 	b.StopTimer()
 	A := RandN(n, n)
 	B := RandN(n, n)
+	D := DiagFloat64(B.Array())
+	D = D[:n]
 	res := RandN(n, n)
-	blasops.Dgemm = cblas.Dgemm
+	blas.Ops.Dgemm = cblas.Dgemm
+	blas.Ops.Daxpy = cblas.Daxpy
+	blas.Ops.Dcopy = cblas.Dcopy
+	blas.Ops.Dscal = cblas.Dscal
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		res.Mul(A, B)
+		res.Mul(A, D)
 	}
 } /*
 func Benchmark_MatrixMulBlasGo(b *testing.B) {
@@ -53,15 +60,36 @@ func Benchmark_Nrm2Go(b *testing.B) {
 	}
 }
 
-/*func Benchmark_Nrm2Blas(b *testing.B) {
-	A := RandN(100, 100)
+func Benchmark_Nrm2Blas(b *testing.B) {
+	A := RandN(n, n)
 	v := A.VecView()
-	blas.Dnrm2 = cblas.Dnrm2
+	blas.Ops.Dnrm2 = cblas.Dnrm2
 
 	for i := 0; i < b.N; i++ {
 		v.Nrm2()
 	}
 }
+
+func Benchmark_DdotGo(b *testing.B) {
+	A := RandN(n, n)
+	v := A.VecView()
+
+	for i := 0; i < b.N; i++ {
+		Ddot(v, v)
+	}
+}
+
+func Benchmark_DdotBlas(b *testing.B) {
+	A := RandN(n, n)
+	v := A.VecView()
+	blas.Ops.Ddot = cblas.Ddot
+
+	for i := 0; i < b.N; i++ {
+		Ddot(v, v)
+	}
+}
+
+/*
 func Benchmark_Nrm2GoFast(b *testing.B) {
 	A := RandN(100, 100)
 	v := A.VecView()
@@ -76,7 +104,7 @@ func TestMatrixBlas(t *testing.T) {
 	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
 	B := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
 
-	res := NewDenseD(2, 2)
+	res := NewDenseFloat64(2, 2)
 
 	res.Mul(A, B)
 
