@@ -48,5 +48,5 @@ type BlasOps interface {
 var ops BlasOps
 
 func Register(o BlasOps) {
-	ops = ops
+	ops = o
 }
