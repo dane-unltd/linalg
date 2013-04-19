@@ -1,6 +1,6 @@
 package matrix
 
-import blas "github.com/dane-unltd/linalg/blasops"
+import "github.com/dane-unltd/linalg/blas"
 
 func (res VecD) Normalize(v VecD) VecD {
 	blas.Dcopy(len(res), v, 1, res, 1)

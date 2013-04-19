@@ -1,9 +1,10 @@
 package linalg
 
 import (
-	//	cblas "code.google.com/p/biogo.blas"
+	cblas "code.google.com/p/biogo.blas"
 	"fmt"
 	_ "github.com/dane-unltd/linalg/blas"
+	"github.com/dane-unltd/linalg/blasops"
 	. "github.com/dane-unltd/linalg/matrix"
 	"testing"
 )
@@ -21,17 +22,17 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 	}
 }
 
-/*func Benchmark_MatrixMulBlas(b *testing.B) {
+func Benchmark_MatrixMulBlas(b *testing.B) {
 	b.StopTimer()
 	A := RandN(n, n)
 	B := RandN(n, n)
 	res := RandN(n, n)
-	blas.Dgemm = cblas.Dgemm
+	blasops.Dgemm = cblas.Dgemm
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		res.Mul(A, B)
 	}
-}
+} /*
 func Benchmark_MatrixMulBlasGo(b *testing.B) {
 	b.StopTimer()
 	A := RandN(n, n)

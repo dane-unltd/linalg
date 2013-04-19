@@ -1,6 +1,6 @@
 package matrix
 
-import blas "github.com/dane-unltd/linalg/blasops"
+import "github.com/dane-unltd/linalg/blas"
 
 type dense struct {
 	rows, cols int

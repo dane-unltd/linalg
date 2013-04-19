@@ -2,7 +2,7 @@ package matrix
 
 import "fmt"
 
-import blas "github.com/dane-unltd/linalg/blasops"
+import "github.com/dane-unltd/linalg/blas"
 
 func (res *DenseD) Add(A, B Matrix) {
 	m, n := res.Size()

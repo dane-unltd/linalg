@@ -1,7 +1,7 @@
 package matrix
 
 import "math/rand"
-import blas "github.com/dane-unltd/linalg/blasops"
+import "github.com/dane-unltd/linalg/blas"
 
 type DenseD struct {
 	dense
