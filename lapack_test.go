@@ -2,20 +2,20 @@ package linalg
 
 import (
 	"github.com/dane-unltd/linalg/clapack"
-	. "github.com/dane-unltd/linalg/matrix"
+	"github.com/dane-unltd/linalg/matrix"
 	"testing"
 )
 
 func TestSvd(t *testing.T) {
-	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
-	S := NewDiag(2)
-	U := NewDense(2, 2)
-	Vt := NewDense(2, 2)
+	A := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
+	S := matrix.NewDiag(2)
+	U := matrix.NewDense(2, 2)
+	Vt := matrix.NewDense(2, 2)
 
 	lapack.Dgsvd(A, S, U, Vt)
 
-	A2 := NewDense(2, 2)
-	A3 := NewDense(2, 2)
+	A2 := matrix.NewDense(2, 2)
+	A3 := matrix.NewDense(2, 2)
 	A2.Mul(U, S)
 	A3.Mul(A2, Vt)
 

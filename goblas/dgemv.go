@@ -1,8 +1,9 @@
 package goblas
 
-// Performs: y = alpha * A * x + beta * y  or y = alpha * A^T * x + beta * y
-/*func (Blas) (Blas) Dgemv(order Order, TransA Transpose, N, M, KL, KU int,
-	alpha float64, A []float64, lda int, X []float64, incX int,
-	beta float64, Y []float64, incY int) {
+import "github.com/kortschak/blas"
 
-}*/
+// Performs: y = alpha * A * x + beta * y  or y = alpha * A^T * x + beta * y
+func (Blas) Dgemv(o blas.Order, tA blas.Transpose, m, n int, alpha float64, a []float64,
+	lda int, x []float64, incX int, beta float64, y []float64, incY int) {
+
+}

@@ -3,7 +3,7 @@ package linalg
 import (
 	"fmt"
 	"github.com/dane-unltd/linalg/goblas"
-	. "github.com/dane-unltd/linalg/matrix"
+	"github.com/dane-unltd/linalg/matrix"
 	"github.com/kortschak/cblas"
 	"testing"
 )
@@ -11,13 +11,13 @@ import (
 var n = 100
 
 func Benchmark_MatrixMulCblas(b *testing.B) {
-	RegisterOps(cblas.Blas{})
+	matrix.Register(cblas.Blas{})
 	b.StopTimer()
-	A := RandN(n, n)
-	B := RandN(n, n)
-	D := Diag(B.Array())
+	A := matrix.RandN(n, n)
+	B := matrix.RandN(n, n)
+	D := matrix.Diag(B.Array())
 	D = D[:n]
-	res := RandN(n, n)
+	res := matrix.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		res.Mul(A, B)
@@ -25,13 +25,13 @@ func Benchmark_MatrixMulCblas(b *testing.B) {
 }
 
 func Benchmark_MatrixMulGo(b *testing.B) {
-	RegisterOps(goblas.Blas{})
+	matrix.Register(goblas.Blas{})
 	b.StopTimer()
-	A := RandN(n, n)
-	B := RandN(n, n)
-	D := Diag(B.Array())
+	A := matrix.RandN(n, n)
+	B := matrix.RandN(n, n)
+	D := matrix.Diag(B.Array())
 	D = D[:n]
-	res := RandN(n, n)
+	res := matrix.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		res.Mul(A, B)
@@ -39,8 +39,8 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 }
 
 func Benchmark_Nrm2Cblas(b *testing.B) {
-	RegisterOps(cblas.Blas{})
-	A := RandN(n, n)
+	matrix.Register(cblas.Blas{})
+	A := matrix.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
@@ -49,8 +49,8 @@ func Benchmark_Nrm2Cblas(b *testing.B) {
 }
 
 func Benchmark_Nrm2Go(b *testing.B) {
-	RegisterOps(goblas.Blas{})
-	A := RandN(n, n)
+	matrix.Register(goblas.Blas{})
+	A := matrix.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
@@ -59,30 +59,30 @@ func Benchmark_Nrm2Go(b *testing.B) {
 }
 
 func Benchmark_DdotCblas(b *testing.B) {
-	RegisterOps(cblas.Blas{})
-	A := RandN(n, n)
+	matrix.Register(cblas.Blas{})
+	A := matrix.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
-		Ddot(v, v)
+		matrix.Dot(v, v)
 	}
 }
 func Benchmark_DdotGo(b *testing.B) {
-	RegisterOps(goblas.Blas{})
-	A := RandN(n, n)
+	matrix.Register(goblas.Blas{})
+	A := matrix.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
-		Ddot(v, v)
+		matrix.Dot(v, v)
 	}
 }
 
 func TestMatrixBlas(t *testing.T) {
-	RegisterOps(goblas.Blas{})
-	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
-	B := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
+	matrix.Register(goblas.Blas{})
+	A := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
+	B := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
 
-	res := NewDense(2, 2)
+	res := matrix.NewDense(2, 2)
 
 	res.Mul(A, B)
 

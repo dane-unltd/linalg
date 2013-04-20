@@ -62,7 +62,7 @@ func (res Vec) Axpy(a float64, x Vec) Vec {
 	return res
 }
 
-func Ddot(a, b Vec) float64 {
+func Dot(a, b Vec) float64 {
 	if len(a) != len(b) {
 		panic("dimension missmatch")
 	}
@@ -112,6 +112,6 @@ func (res Vec) Neg(v Vec) Vec {
 }
 
 func (res Vec) Mul(A, B Matrix) {
-	resMat := FromArrayD(res, true, len(res), 1)
+	resMat := FromArray(res, true, len(res), 1)
 	resMat.Mul(A, B)
 }

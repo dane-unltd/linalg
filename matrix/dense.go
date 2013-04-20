@@ -73,7 +73,7 @@ func RandN(dims ...int) *Dense {
 	return D
 }
 
-func FromArrayD(data []float64, useArray bool, dims ...int) *Dense {
+func FromArray(data []float64, useArray bool, dims ...int) *Dense {
 	num := 1
 	for _, v := range dims {
 		num *= v
