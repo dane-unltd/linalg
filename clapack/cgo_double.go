@@ -4,26 +4,31 @@
 // It is free software, distributed under the terms of GNU Lesser General Public 
 // License Version 3, or any later version. See the COPYING tile included in this archive.
 
-package lapack
+package clapack
 
 // #cgo linux LDFLAGS: -lblas -llapack
 // #cgo darwin LDFLAGS: -DYA_BLAS -DYA_LAPACK -DYA_BLASMULT -framework vecLib
 // #include <stdlib.h>
 // #include "lapack.h"
 import "C"
-import "unsafe"
+import (
+	"github.com/dane-unltd/linalg/lapack"
+	"github.com/kortschak/blas"
+	"unsafe"
+)
 
 //import "fmt"
 
-//int ilaenv_(int  *ispec, char **name, char **opts, int *n1, int *n2, int *n3, int *n4);
-func Ilaenv(ispec int, name []string, opts []string, n1, n2, n3, n4 int) int {
-	return 0
-}
+type Lapack struct{}
+
+var (
+	_ lapack.Float64 = Lapack{}
+)
 
 // void dgbsv_(int *n, int *kl, int *ku, int *nrhs,
 //		double *AB, int *ldab, int *ipiv, double *b, int *ldb, int *info);
-func Dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64, LDb int) int {
-	var info int = 0
+func (Lapack) Dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64, LDb int) lapack.Info {
+	var info lapack.Info = 0
 	C.dgbsv_((*C.int)(unsafe.Pointer(&n)), (*C.int)(unsafe.Pointer(&kl)),
 		(*C.int)(unsafe.Pointer(&ku)), (*C.int)(unsafe.Pointer(&nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&LDa)),
@@ -34,8 +39,8 @@ func Dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64,
 
 // void dgbtrf_(int *m, int *n, int *kl, int *ku,
 //		double *AB, int *ldab, int *ipiv, int *info);
-func Dgbtrf(m, n, kl, ku int, AB []float64, ldab int, ipiv []int32) int {
-	var info int = 0
+func (Lapack) Dgbtrf(m, n, kl, ku int, AB []float64, ldab int, ipiv []int32) lapack.Info {
+	var info lapack.Info = 0
 	C.dgbtrf_((*C.int)(unsafe.Pointer(&m)), (*C.int)(unsafe.Pointer(&n)),
 		(*C.int)(unsafe.Pointer(&kl)), (*C.int)(unsafe.Pointer(&ku)),
 		(*C.double)(unsafe.Pointer(&AB[0])), (*C.int)(unsafe.Pointer(&ldab)),
@@ -46,12 +51,10 @@ func Dgbtrf(m, n, kl, ku int, AB []float64, ldab int, ipiv []int32) int {
 // void dgbtrs_(char *trans, int *n, int *kl, int *ku, int *nrhs,
 //		double *AB, int *ldab, int *ipiv, double *B, int *ldB, int *info);
 //
-func Dgbtrs(trans string, n, kl, ku, nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
-	var info int = 0
-	ctrans := C.CString(trans)
-	defer C.free(unsafe.Pointer(ctrans))
+func (Lapack) Dgbtrs(trans blas.Transpose, n, kl, ku, nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) lapack.Info {
+	var info lapack.Info = 0
 
-	C.dgbtrs_(ctrans, (*C.int)(unsafe.Pointer(&n)), (*C.int)(unsafe.Pointer(&kl)),
+	C.dgbtrs_((*C.char)(unsafe.Pointer(&trans)), (*C.int)(unsafe.Pointer(&n)), (*C.int)(unsafe.Pointer(&kl)),
 		(*C.int)(unsafe.Pointer(&ku)), (*C.int)(unsafe.Pointer(&nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.int)(unsafe.Pointer(&ipiv[0])), (*C.double)(unsafe.Pointer(&B[0])),
@@ -61,8 +64,8 @@ func Dgbtrs(trans string, n, kl, ku, nrhs int, A []float64, lda int, ipiv []int3
 }
 
 // void dgetrf_(int *m, int *n, double *A, int *lda, int *ipiv, int *info);
-func Dgetrf(M, N int, A []float64, lda int, ipiv []int32) int {
-	var info int = 0
+func (Lapack) Dgetrf(M, N int, A []float64, lda int, ipiv []int32) lapack.Info {
+	var info lapack.Info = 0
 	C.dgetrf_((*C.int)(unsafe.Pointer(&M)), (*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.int)(unsafe.Pointer(&ipiv[0])), (*C.int)(unsafe.Pointer(&info)))
@@ -71,12 +74,12 @@ func Dgetrf(M, N int, A []float64, lda int, ipiv []int32) int {
 
 // dgetrs_(char *trans, int *n, int *nrhs, double *A, int *lda,
 //    int *ipiv, double *B, int *ldb, int *info);
-func Dgetrs(trans string, N, Nrhs int, A []float64, lda int, ipiv []int32,
-	B []float64, ldb int) int {
-	ctrans := C.CString(trans)
-	defer C.free(unsafe.Pointer(ctrans))
-	var info int = 0
-	C.dgetrs_(ctrans, (*C.int)(unsafe.Pointer(&N)), (*C.int)(unsafe.Pointer(&Nrhs)),
+func (Lapack) Dgetrs(trans blas.Transpose, N, Nrhs int, A []float64, lda int, ipiv []int32,
+	B []float64, ldb int) lapack.Info {
+	var info lapack.Info = 0
+	C.dgetrs_(
+		(*C.char)(unsafe.Pointer(&trans)),
+		(*C.int)(unsafe.Pointer(&N)), (*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.int)(unsafe.Pointer(&ipiv[0])),
 		(*C.double)(unsafe.Pointer(&B[0])), (*C.int)(unsafe.Pointer(&ldb)),
@@ -85,8 +88,8 @@ func Dgetrs(trans string, N, Nrhs int, A []float64, lda int, ipiv []int32,
 }
 
 // dgetri_(int *n, double *A, int *lda, int *ipiv, double *work, int *lwork, int *info);
-func Dgetri(N int, A []float64, lda int, ipiv []int32) int {
-	var info int = 0
+func (Lapack) Dgetri(N int, A []float64, lda int, ipiv []int32) lapack.Info {
+	var info lapack.Info = 0
 	var lwork int = -1
 	var work float64
 	// pre-calculate work buffer size
@@ -106,8 +109,8 @@ func Dgetri(N int, A []float64, lda int, ipiv []int32) int {
 }
 
 // dgesv_(int *n, int *nrhs, double *A, int *lda, int *ipiv, double *B, int *ldb, int *info);
-func Dgesv(N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
-	var info int = 0
+func (Lapack) Dgesv(N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) lapack.Info {
+	var info lapack.Info = 0
 	C.dgesv_((*C.int)(unsafe.Pointer(&N)), (*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.int)(unsafe.Pointer(&ipiv[0])),
@@ -117,8 +120,8 @@ func Dgesv(N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int
 }
 
 // void dgttrf_(int *n, double *dl, double *d, double *du, double *du2, int *ipiv, int *info);
-func Dgttrf(N int, DL, D, DU, DU2 []float64, ipiv []int32) int {
-	var info int = 0
+func (Lapack) Dgttrf(N int, DL, D, DU, DU2 []float64, ipiv []int32) lapack.Info {
+	var info lapack.Info = 0
 	C.dgttrf_((*C.int)(unsafe.Pointer(&N)), (*C.double)(unsafe.Pointer(&DL[0])),
 		(*C.double)(unsafe.Pointer(&D[0])), (*C.double)(unsafe.Pointer(&DU[0])),
 		(*C.double)(unsafe.Pointer(&DU2[0])), (*C.int)(unsafe.Pointer(&ipiv[0])),
@@ -128,12 +131,12 @@ func Dgttrf(N int, DL, D, DU, DU2 []float64, ipiv []int32) int {
 
 // void dgttrs_(char *trans, int *n, int *nrhs, double *dl, double *d,
 //		double *du, double *du2, int *ipiv, double *B, int *ldB, int *info);
-func Dgttrs(trans string, N, Nrhs int, DL, D, DU, DU2 []float64,
-	ipiv []int32, B []float64, ldb int) int {
-	var info int = 0
-	ctrans := C.CString(trans)
-	defer C.free(unsafe.Pointer(ctrans))
-	C.dgttrs_(ctrans, (*C.int)(unsafe.Pointer(&N)), (*C.int)(unsafe.Pointer(&Nrhs)),
+func (Lapack) Dgttrs(trans blas.Transpose, N, Nrhs int, DL, D, DU, DU2 []float64,
+	ipiv []int32, B []float64, ldb int) lapack.Info {
+	var info lapack.Info = 0
+	C.dgttrs_(
+		(*C.char)(unsafe.Pointer(&trans)),
+		(*C.int)(unsafe.Pointer(&N)), (*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&DL[0])), (*C.double)(unsafe.Pointer(&D[0])),
 		(*C.double)(unsafe.Pointer(&DU[0])), (*C.double)(unsafe.Pointer(&DU2[0])),
 		(*C.int)(unsafe.Pointer(&ipiv[0])), (*C.double)(unsafe.Pointer(&B[0])),
@@ -145,12 +148,11 @@ func Dgttrs(trans string, N, Nrhs int, DL, D, DU, DU2 []float64,
 //		double *DU, double *B, int *ldB, int *info);
 
 // void dpotrf_(char *uplo, int *n, double *A, int *lda, int *info);
-func Dpotrf(uplo string, N int, A []float64, lda int) int {
-	var info int
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
+func (Lapack) Dpotrf(uplo blas.Uplo, N int, A []float64, lda int) lapack.Info {
+	var info lapack.Info = 0
 
-	C.dpotrf_(cuplo,
+	C.dpotrf_(
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])),
 		(*C.int)(unsafe.Pointer(&lda)),
@@ -160,11 +162,10 @@ func Dpotrf(uplo string, N int, A []float64, lda int) int {
 
 // void dpotrs_(char *uplo, int *n, int *nrhs, double *A,
 //		int *lda, double *B, int *ldb, int *info);
-func Dpotrs(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
-	var info int = 0
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-	C.dpotrs_(cuplo,
+func (Lapack) Dpotrs(uplo blas.Uplo, N, Nrhs int, A []float64, lda int, B []float64, ldb int) lapack.Info {
+	var info lapack.Info = 0
+	C.dpotrs_(
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])),
@@ -177,11 +178,10 @@ func Dpotrs(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int
 }
 
 // void dpotri_(char *uplo, int *n, double *A, int *lda, int *info);
-func Dpotri(uplo string, N int, A []float64, lda int) int {
-	var info int = 0
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-	C.dpotri_(cuplo,
+func (Lapack) Dpotri(uplo blas.Uplo, N int, A []float64, lda int) lapack.Info {
+	var info lapack.Info = 0
+	C.dpotri_(
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])),
 		(*C.int)(unsafe.Pointer(&lda)),
@@ -192,11 +192,10 @@ func Dpotri(uplo string, N int, A []float64, lda int) int {
 
 // void dposv_(char *uplo, int *n, int *nrhs, double *A, int *lda,
 //		double *B, int *ldb, int *info);
-func Dposv(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
-	var info int = 0
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-	C.dposv_(cuplo,
+func (Lapack) Dposv(uplo blas.Uplo, N, Nrhs int, A []float64, lda int, B []float64, ldb int) lapack.Info {
+	var info lapack.Info = 0
+	C.dposv_(
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])),
@@ -223,15 +222,15 @@ func Dposv(uplo string, N, Nrhs int, A []float64, lda int, B []float64, ldb int)
 
 // void dsytrf_(char *uplo, int *n, double *A, int *lda, int *ipiv,
 //		double *work, int *lwork, int *info);
-func Dsytrf(uplo string, N int, A []float64, lda int, ipiv []int32) int {
-	var info int = 0
+func (Lapack) Dsytrf(uplo blas.Uplo, N int, A []float64, lda int, ipiv []int32) lapack.Info {
+	var info lapack.Info = 0
 	var lwork int = -1
 	var work float64
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
 
 	// pre-calculate work buffer size
-	C.dsytrf_(cuplo, (*C.int)(unsafe.Pointer(&N)),
+	C.dsytrf_(
+		(*C.char)(unsafe.Pointer(&uplo)),
+		(*C.int)(unsafe.Pointer(&N)),
 		nil, (*C.int)(unsafe.Pointer(&lda)), nil,
 		(*C.double)(unsafe.Pointer(&work)), (*C.int)(unsafe.Pointer(&lwork)),
 		(*C.int)(unsafe.Pointer(&info)))
@@ -240,7 +239,9 @@ func Dsytrf(uplo string, N int, A []float64, lda int, ipiv []int32) int {
 	lwork = int(work)
 	wbuf := make([]float64, lwork)
 
-	C.dsytrf_(cuplo, (*C.int)(unsafe.Pointer(&N)),
+	C.dsytrf_(
+		(*C.char)(unsafe.Pointer(&uplo)),
+		(*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.int)(unsafe.Pointer(&ipiv[0])),
 		(*C.double)(unsafe.Pointer(&wbuf[0])), (*C.int)(unsafe.Pointer(&lwork)),
@@ -250,13 +251,13 @@ func Dsytrf(uplo string, N int, A []float64, lda int, ipiv []int32) int {
 
 // void dsytrs_(char *uplo, int *n, int *nrhs, double *A, int *lda,
 //		int *ipiv, double *B, int *ldb, int *info);
-func Dsytrs(uplo string, N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) int {
+func (Lapack) Dsytrs(uplo blas.Uplo, N, Nrhs int, A []float64, lda int, ipiv []int32, B []float64, ldb int) lapack.Info {
 
-	var info int = 0
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
+	var info lapack.Info = 0
 
-	C.dsytrs_(cuplo, (*C.int)(unsafe.Pointer(&N)),
+	C.dsytrs_(
+		(*C.char)(unsafe.Pointer(&uplo)),
+		(*C.int)(unsafe.Pointer(&N)),
 		(*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.int)(unsafe.Pointer(&ipiv[0])),
@@ -274,17 +275,14 @@ func Dsytrs(uplo string, N, Nrhs int, A []float64, lda int, ipiv []int32, B []fl
 
 // void dtrtrs_(char *uplo, char *trans, char *diag, int *n, int *nrhs,
 //		double  *A, int *lda, double *B, int *ldb, int *info);
-func Dtrtrs(uplo, trans, diag string, N, Nrhs int, A []float64, lda int, B []float64, ldb int) int {
+func (Lapack) Dtrtrs(uplo blas.Uplo, trans blas.Transpose, diag blas.Diag, N, Nrhs int, A []float64, lda int, B []float64, ldb int) lapack.Info {
 
-	var info int = 0
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-	ctrans := C.CString(trans)
-	defer C.free(unsafe.Pointer(ctrans))
-	cdiag := C.CString(diag)
-	defer C.free(unsafe.Pointer(cdiag))
+	var info lapack.Info = 0
 
-	C.dtrtrs_(cuplo, ctrans, cdiag,
+	C.dtrtrs_(
+		(*C.char)(unsafe.Pointer(&uplo)),
+		(*C.char)(unsafe.Pointer(&trans)),
+		(*C.char)(unsafe.Pointer(&diag)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.int)(unsafe.Pointer(&Nrhs)),
 		(*C.double)(unsafe.Pointer(&A[0])),
@@ -305,8 +303,8 @@ func Dtrtrs(uplo, trans, diag string, N, Nrhs int, A []float64, lda int, B []flo
 
 // void dgeqrf_(int *m, int *n, double *a, int *lda, double *tau,
 //		double *work, int *lwork, int *info);
-func Dgeqrf(M, N int, A []float64, lda int, tau []float64) int {
-	var info int = 0
+func (Lapack) Dgeqrf(M, N int, A []float64, lda int, tau []float64) lapack.Info {
+	var info lapack.Info = 0
 	var lwork int = -1
 	var work float64
 
@@ -336,18 +334,15 @@ func Dgeqrf(M, N int, A []float64, lda int, tau []float64) int {
 // void dormqr_(char *side, char *trans, int *m, int *n, int *k,
 //		double *a, int *lda, double *tau, double *c, int *ldc,
 //		double *work, int *lwork, int *info);
-func Dormqr(side, trans string, M, N, K int, A []float64, lda int, tau, C []float64, ldc int) int {
-	var info int = 0
+func (Lapack) Dormqr(side blas.Side, trans blas.Transpose, M, N, K int, A []float64, lda int, tau, C []float64, ldc int) lapack.Info {
+	var info lapack.Info = 0
 	var lwork int = -1
 	var work float64
 
-	cside := C.CString(side)
-	defer C.free(unsafe.Pointer(cside))
-	ctrans := C.CString(trans)
-	defer C.free(unsafe.Pointer(ctrans))
-
 	// calculate work buffer size
-	C.dormqr_(cside, ctrans,
+	C.dormqr_(
+		(*C.char)(unsafe.Pointer(&side)),
+		(*C.char)(unsafe.Pointer(&trans)),
 		(*C.int)(unsafe.Pointer(&M)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.int)(unsafe.Pointer(&K)),
@@ -362,7 +357,9 @@ func Dormqr(side, trans string, M, N, K int, A []float64, lda int, tau, C []floa
 
 	lwork = int(work)
 	wbuf := make([]float64, lwork)
-	C.dormqr_(cside, ctrans,
+	C.dormqr_(
+		(*C.char)(unsafe.Pointer(&side)),
+		(*C.char)(unsafe.Pointer(&trans)),
 		(*C.int)(unsafe.Pointer(&M)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.int)(unsafe.Pointer(&K)),
@@ -397,20 +394,18 @@ func Dormqr(side, trans string, M, N, K int, A []float64, lda int, tau, C []floa
 
 // void dsyevd_(char *jobz, char *uplo, int *n, double *A, int *ldA, double *W,
 //		double *work, int *lwork, int *iwork, int *liwork, int *info);
-func Dsyevd(jobz, uplo string, N int, A []float64, lda int, W []float64) int {
-	var info int = 0
+func (Lapack) Dsyevd(jobz lapack.Job, uplo blas.Uplo, N int, A []float64, lda int, W []float64) lapack.Info {
+	var info lapack.Info = 0
 	var lwork int = -1
 	var liwork int = -1
 	var iwork int32
 	var work float64
 
-	cjobz := C.CString(jobz)
-	defer C.free(unsafe.Pointer(cjobz))
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-
 	// pre-calculate work buffer size
-	C.dsyevd_(cjobz, cuplo, (*C.int)(unsafe.Pointer(&N)), nil,
+	C.dsyevd_(
+		(*C.char)(unsafe.Pointer(&jobz)),
+		(*C.char)(unsafe.Pointer(&uplo)),
+		(*C.int)(unsafe.Pointer(&N)), nil,
 		(*C.int)(unsafe.Pointer(&lda)), nil,
 		(*C.double)(unsafe.Pointer(&work)), (*C.int)(unsafe.Pointer(&lwork)),
 		(*C.int)(unsafe.Pointer(&iwork)), (*C.int)(unsafe.Pointer(&liwork)),
@@ -422,7 +417,10 @@ func Dsyevd(jobz, uplo string, N int, A []float64, lda int, W []float64) int {
 	liwork = int(iwork)
 	wibuf := make([]int32, liwork)
 
-	C.dsyevd_(cjobz, cuplo, (*C.int)(unsafe.Pointer(&N)),
+	C.dsyevd_(
+		(*C.char)(unsafe.Pointer(&jobz)),
+		(*C.char)(unsafe.Pointer(&uplo)),
+		(*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])),
 		(*C.int)(unsafe.Pointer(&lda)), (*C.double)(unsafe.Pointer(&W[0])),
 		(*C.double)(unsafe.Pointer(&wbuf[0])), (*C.int)(unsafe.Pointer(&lwork)),
@@ -435,25 +433,19 @@ func Dsyevd(jobz, uplo string, N int, A []float64, lda int, W []float64) int {
 //		double *vl, double *vu, int *il, int *iu, double *abstol, int *m, double *W,
 //		double *Z, int *ldZ, int *isuppz, double *work, int *lwork, int *iwork,
 //		int *liwork, int *info);
-func Dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float64,
-	il, iu int, M int, W, Z []float64, LDz int) int {
+func (Lapack) Dsyevr(jobz lapack.Job, srange lapack.Range, uplo blas.Uplo, N int, A []float64, lda int, vl, vu float64, il, iu int, abstol float64, M int, W, Z []float64, LDz int, isuppz []int) lapack.Info {
 
-	var info int = 0
+	var info lapack.Info = 0
 	var lwork int = -1
 	var liwork int = -1
 	var iwork int32
 	var work float64
-	var abstol float64 = 0.0
-
-	cjobz := C.CString(jobz)
-	defer C.free(unsafe.Pointer(cjobz))
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-	crange := C.CString(srange)
-	defer C.free(unsafe.Pointer(crange))
 
 	// pre-calculate work buffer size
-	C.dsyevr_(cjobz, crange, cuplo,
+	C.dsyevr_(
+		(*C.char)(unsafe.Pointer(&jobz)),
+		(*C.char)(unsafe.Pointer(&srange)),
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		nil,
 		(*C.int)(unsafe.Pointer(&lda)),
@@ -491,7 +483,10 @@ func Dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 		Zbuf = (*C.double)(unsafe.Pointer(nil))
 	}
 
-	C.dsyevr_(cjobz, crange, cuplo,
+	C.dsyevr_(
+		(*C.char)(unsafe.Pointer(&jobz)),
+		(*C.char)(unsafe.Pointer(&srange)),
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])),
 		(*C.int)(unsafe.Pointer(&lda)),
@@ -504,7 +499,7 @@ func Dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 		Wbuf,
 		Zbuf,
 		(*C.int)(unsafe.Pointer(&LDz)),
-		nil,
+		(*C.int)(unsafe.Pointer(&isuppz[0])),
 		(*C.double)(unsafe.Pointer(&wbuf[0])),
 		(*C.int)(unsafe.Pointer(&lwork)),
 		(*C.int)(unsafe.Pointer(&wibuf[0])),
@@ -519,25 +514,19 @@ func Dsyevr(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 //		double *W, double *Z, int *ldz, double *work, int *lwork, int *iwork,
 //		int *ifail, int *info);
 
-func Dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float64,
-	il, iu int, M int, W, Z []float64, LDz int) int {
+func (Lapack) Dsyevx(jobz lapack.Job, srange lapack.Range, uplo blas.Uplo, N int, A []float64, lda int, vl, vu float64, il, iu int, abstol float64, M int, W, Z []float64, LDz int, ifail []int) lapack.Info {
 
-	var info int = 0
+	var info lapack.Info = 0
 	var lwork int = -1
 	//var liwork int = -1
 	//var iwork int32
 	var work float64
-	var abstol float64 = 0.0
-
-	cjobz := C.CString(jobz)
-	defer C.free(unsafe.Pointer(cjobz))
-	cuplo := C.CString(uplo)
-	defer C.free(unsafe.Pointer(cuplo))
-	crange := C.CString(srange)
-	defer C.free(unsafe.Pointer(crange))
 
 	// pre-calculate work buffer size
-	C.dsyevx_(cjobz, crange, cuplo, // char *jobz, range, uplo
+	C.dsyevx_(
+		(*C.char)(unsafe.Pointer(&jobz)),
+		(*C.char)(unsafe.Pointer(&srange)),
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)), // int *n
 		nil,                          // double *A
 		(*C.int)(unsafe.Pointer(&lda)),       // int *lda
@@ -562,14 +551,6 @@ func Dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 	wbuf := make([]float64, lwork)
 	wibuf := make([]int32, 5*N)
 
-	var ifailbuf *C.int
-	var ifail []int32
-	ifailbuf = (*C.int)(unsafe.Pointer(nil))
-
-	if jobz[0] == 'V' {
-		ifail = make([]int32, N)
-		ifailbuf = (*C.int)(unsafe.Pointer(&ifail[0]))
-	}
 	var Zbuf, Wbuf *C.double
 	if W != nil {
 		Wbuf = (*C.double)(unsafe.Pointer(&W[0]))
@@ -581,7 +562,10 @@ func Dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 	} else {
 		Zbuf = (*C.double)(unsafe.Pointer(nil))
 	}
-	C.dsyevx_(cjobz, crange, cuplo,
+	C.dsyevx_(
+		(*C.char)(unsafe.Pointer(&jobz)),
+		(*C.char)(unsafe.Pointer(&srange)),
+		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])),
 		(*C.int)(unsafe.Pointer(&lda)),
@@ -597,7 +581,7 @@ func Dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 		(*C.double)(unsafe.Pointer(&wbuf[0])),
 		(*C.int)(unsafe.Pointer(&lwork)),
 		(*C.int)(unsafe.Pointer(&wibuf[0])),
-		ifailbuf,
+		(*C.int)(unsafe.Pointer(&ifail[0])),
 		(*C.int)(unsafe.Pointer(&info)))
 
 	return info
@@ -609,21 +593,18 @@ func Dsyevx(jobz, srange, uplo string, N int, A []float64, lda int, vl, vu float
 // void dgesvd_(char *jobu, char *jobvt, int *m, int *n, double *A, int *ldA,
 //		double *S, double *U, int *ldU, double *Vt, int *ldVt, double *work,
 //		int *lwork, int *info);
-func Dgesvd(jobu, jobvt string, M, N int, A []float64, lda int, S []float64, U []float64,
-	ldu int, Vt []float64, ldvt int) int {
+func (Lapack) Dgesvd(jobu, jobvt lapack.Job, M, N int, A []float64, lda int, S []float64, U []float64,
+	ldu int, Vt []float64, ldvt int) lapack.Info {
 
-	var info int = 0
+	var info lapack.Info = 0
 	var lwork int = -1
 	var work float64
 	//var abstol float64 = 0.0
 
-	cjobu := C.CString(jobu)
-	defer C.free(unsafe.Pointer(cjobu))
-	cjobvt := C.CString(jobvt)
-	defer C.free(unsafe.Pointer(cjobvt))
-
 	// pre-calculate work buffer size
-	C.dgesvd_(cjobu, cjobvt, (*C.int)(unsafe.Pointer(&M)), (*C.int)(unsafe.Pointer(&N)),
+	C.dgesvd_((*C.char)(unsafe.Pointer(&jobu)),
+		(*C.char)(unsafe.Pointer(&jobvt)),
+		(*C.int)(unsafe.Pointer(&M)), (*C.int)(unsafe.Pointer(&N)),
 		nil, (*C.int)(unsafe.Pointer(&lda)),
 		nil, nil, (*C.int)(unsafe.Pointer(&ldu)),
 		nil, (*C.int)(unsafe.Pointer(&ldvt)),
@@ -646,7 +627,9 @@ func Dgesvd(jobu, jobvt string, M, N int, A []float64, lda int, S []float64, U [
 		Vtbuf = (*C.double)(unsafe.Pointer(nil))
 	}
 
-	C.dgesvd_(cjobu, cjobvt, (*C.int)(unsafe.Pointer(&M)), (*C.int)(unsafe.Pointer(&N)),
+	C.dgesvd_((*C.char)(unsafe.Pointer(&jobu)),
+		(*C.char)(unsafe.Pointer(&jobvt)),
+		(*C.int)(unsafe.Pointer(&M)), (*C.int)(unsafe.Pointer(&N)),
 		(*C.double)(unsafe.Pointer(&A[0])), (*C.int)(unsafe.Pointer(&lda)),
 		(*C.double)(unsafe.Pointer(&S[0])), Ubuf, (*C.int)(unsafe.Pointer(&ldu)),
 		Vtbuf, (*C.int)(unsafe.Pointer(&ldvt)),

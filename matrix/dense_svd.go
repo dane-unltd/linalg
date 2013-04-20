@@ -1,8 +1,8 @@
-package lapack
+package matrix
 
-import "github.com/dane-unltd/linalg/matrix"
+import "github.com/dane-unltd/linalg/lapack"
 
-func Dgsvd(D *matrix.Dense, S matrix.Diag, U, Vt *matrix.Dense) {
+func (D *Dense) Svd(S Diag, U, Vt *Dense) {
 	if U.IsTr() {
 		U.T()
 	}
@@ -23,24 +23,24 @@ func Dgsvd(D *matrix.Dense, S matrix.Diag, U, Vt *matrix.Dense) {
 		nSV = n
 	}
 
-	jobu, jobvt := "", ""
+	var jobu, jobvt lapack.Job
 
 	if nu == mu {
-		jobu = "A"
+		jobu = 'A'
 	} else if nu == nSV {
-		jobu = "S"
+		jobu = 'S'
 	} else {
 		panic("wrong dimensions of U")
 	}
 
 	if nv == mv {
-		jobvt = "A"
+		jobvt = 'A'
 	} else if mv == nSV {
-		jobvt = "S"
+		jobvt = 'S'
 	} else {
 		panic("wrong dimensions of V")
 	}
 
-	/*info := */ Dgesvd(jobu, jobvt, m, n, D.Copy().(*matrix.Dense).Array(), D.Stride(), S,
+	/*info := */ ops.Dgesvd(jobu, jobvt, m, n, D.Copy().(*Dense).Array(), D.Stride(), S,
 		U.Array(), U.Stride(), Vt.Array(), Vt.Stride())
 }
