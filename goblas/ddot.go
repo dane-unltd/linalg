@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Ddot(N int, X []float64, incX int, Y []float64, incY int) float64 {
+	return Ddot(N, X, incX, Y, incY)
+}
+
 // Scalar product: X^T Y 
 func Ddot(N int, X []float64, incX int, Y []float64, incY int) float64
 

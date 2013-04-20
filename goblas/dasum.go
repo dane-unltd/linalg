@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Dasum(N int, X []float64, incX int) float64 {
+	return Dasum(N, X, incX)
+}
+
 // Absolute sum: \sum |X_i|
 func Dasum(N int, X []float64, incX int) float64
 

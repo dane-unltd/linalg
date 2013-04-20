@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Isamax(N int, X []float32, incX int) int {
+	return Isamax(N, X, incX)
+}
+
 // Index of largest (absoulute) element of the vector X
 func Isamax(N int, X []float32, incX int) int
 

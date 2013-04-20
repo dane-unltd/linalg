@@ -2,6 +2,10 @@ package goblas
 
 import "math"
 
+func (Blas) Dnrm2(N int, X []float64, incX int) float64 {
+	return Dnrm2(N, X, incX)
+}
+
 // Euclidean norm: ||X||_2 = \sqrt {\sum X_i^2}
 func Dnrm2(N int, X []float64, incX int) float64
 

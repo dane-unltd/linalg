@@ -2,10 +2,10 @@ package goblas
 
 import "math"
 
-import "github.com/dane-unltd/linalg/blas"
+import "github.com/kortschak/blas"
 
 // Compute a modified Givens transformation
-func Drotmg(d1, d2, x1, y1 float64) (p *blas.RotmParams, rd1, rd2, rx1 float64) {
+func (Blas) Drotmg(d1, d2, x1, y1 float64) (p *blas.DrotmParams, rd1, rd2, rx1 float64) {
 	var p1, p2, q1, q2, u float64
 
 	gam := 4096.0

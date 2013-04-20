@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Dcopy(N int, X []float64, incX int, Y []float64, incY int) {
+	Dcopy(N, X, incX, Y, incY)
+}
+
 // Copy the  elements of the vectors X and Y.
 func Dcopy(N int, X []float64, incX int, Y []float64, incY int)
 

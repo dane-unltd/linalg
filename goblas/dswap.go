@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Dswap(N int, X []float64, incX int, Y []float64, incY int) {
+	Dswap(N, X, incX, Y, incY)
+}
+
 // Exchange the elements of the vectors X and Y.
 func Dswap(N int, X []float64, incX int, Y []float64, incY int)
 

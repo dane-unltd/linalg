@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Dscal(N int, alpha float64, X []float64, incX int) {
+	Dscal(N, alpha, X, incX)
+}
+
 // Rescale the vector X by the multiplicative factor alpha
 func Dscal(N int, alpha float64, X []float64, incX int)
 

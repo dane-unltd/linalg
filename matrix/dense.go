@@ -1,7 +1,7 @@
 package matrix
 
 import "math/rand"
-import "github.com/dane-unltd/linalg/blas"
+import "github.com/kortschak/blas"
 
 type dense struct {
 	rows, cols int

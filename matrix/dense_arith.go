@@ -2,7 +2,7 @@ package matrix
 
 import "fmt"
 
-import "github.com/dane-unltd/linalg/blas"
+import "github.com/kortschak/blas"
 
 func (res *DenseFloat64) Add(A, B Matrix) {
 	m, n := res.Size()
@@ -82,19 +82,19 @@ func (res *DenseFloat64) Mul(A, B Matrix) {
 	case *DenseFloat64:
 		switch B := B.(type) {
 		case *DenseFloat64:
-			blas.Gemm(blas.ColMajor, A.trans, B.trans, m, n, na,
+			ops.Dgemm(blas.ColMajor, A.trans, B.trans, m, n, na,
 				1, A.data, A.stride, B.data, B.stride, 0,
 				res.data, res.stride)
 			return
 		case VecFloat64:
-			blas.Gemm((blas.ColMajor), (A.trans), (blas.NoTrans),
+			ops.Dgemm((blas.ColMajor), (A.trans), (blas.NoTrans),
 				m, n, na, 1, A.data, A.stride, B, len(B), 0,
 				res.data, res.stride)
 			return
 		case DiagFloat64:
 			for i := 0; i < n; i++ {
-				blas.Copy(m, A.ColView(i), 1, res.ColView(i), 1)
-				blas.Scal(m, B[i], res.ColView(i), 1)
+				ops.Dcopy(m, A.ColView(i), 1, res.ColView(i), 1)
+				ops.Dscal(m, B[i], res.ColView(i), 1)
 			}
 			return
 		}

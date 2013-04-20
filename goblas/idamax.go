@@ -1,5 +1,9 @@
 package goblas
 
+func (Blas) Idamax(N int, X []float64, incX int) int {
+	return Idamax(N, X, incX)
+}
+
 // Index of largest (absoulute) element of the vector X
 func Idamax(N int, X []float64, incX int) int
 

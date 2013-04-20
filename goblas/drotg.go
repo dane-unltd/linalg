@@ -2,6 +2,10 @@ package goblas
 
 import "math"
 
+func (Blas) Drotg(a, b float64) (c, s, r, z float64) {
+	return Drotg(a, b)
+}
+
 // Compute a Givens rotation (c,s) which zeroes the vector (a,b)
 func Drotg(a, b float64) (c, s, r, z float64)
 
