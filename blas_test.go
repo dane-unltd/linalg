@@ -1,7 +1,6 @@
 package linalg
 
 import (
-	"fmt"
 	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
 	"github.com/dane-unltd/linalg/matrix"
@@ -92,20 +91,23 @@ func TestMatrixBlas(t *testing.T) {
 	A := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
 	B := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
 
-	res := matrix.NewDense(2, 2)
+	temp := matrix.NewDense(2)
+
+	res := matrix.NewDense(2)
+	res1 := matrix.FromArray([]float64{7, 10, 15, 22}, true, 2, 2)
 
 	res.Mul(A, B)
 
-	fmt.Println(res)
+	temp.Sub(res, res1)
+	if temp.VecView().Nrm2Sq() > 0.01 {
+		t.Error("wrong result", res, res1)
+	}
 
 	A.T()
 	B.T()
 	res.Mul(A, B)
 
-	fmt.Println(res)
-
 	A.T()
 	res.Mul(A, B)
 
-	fmt.Println(res)
 }

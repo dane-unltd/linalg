@@ -17,10 +17,12 @@ func (res *Dense) Add(A, B Matrix) {
 	case *Dense:
 		switch B := B.(type) {
 		case *Dense:
-			for c := 0; c < n; c++ {
-				res.ColView(c).Add(A.ColView(c), B.ColView(c))
+			if !A.IsTr() && !B.IsTr() {
+				for c := 0; c < n; c++ {
+					res.ColView(c).Add(A.ColView(c), B.ColView(c))
+				}
+				return
 			}
-			return
 		}
 	}
 
@@ -49,10 +51,12 @@ func (res *Dense) Sub(A, B Matrix) {
 	case *Dense:
 		switch B := B.(type) {
 		case *Dense:
-			for c := 0; c < n; c++ {
-				res.ColView(c).Sub(A.ColView(c), B.ColView(c))
+			if !A.IsTr() && !B.IsTr() {
+				for c := 0; c < n; c++ {
+					res.ColView(c).Sub(A.ColView(c), B.ColView(c))
+				}
+				return
 			}
-			return
 		}
 	}
 

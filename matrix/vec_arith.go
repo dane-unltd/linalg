@@ -1,5 +1,7 @@
 package matrix
 
+import "github.com/kortschak/blas"
+
 func (res Vec) Normalize(v Vec) Vec {
 	ops.Dcopy(len(res), v, 1, res, 1)
 	return res.Scal(1 / v.Nrm2())
@@ -7,6 +9,10 @@ func (res Vec) Normalize(v Vec) Vec {
 
 func (v Vec) Nrm2Sq() float64 {
 	return ops.Ddot(len(v), v, 1, v, 1)
+}
+
+func (res Vec) CopyFrom(v Vec) {
+	ops.Dcopy(len(res), v, 1, res, 1)
 }
 
 func (v Vec) Nrm2() float64 {
@@ -43,13 +49,31 @@ func (res Vec) Max(v Vec, a float64) Vec {
 	return res
 }
 
-func (res Vec) MulH(a, b Vec) {
+func (res Vec) MulH(a, b Vec) Vec {
 	if len(res) != len(a) || len(res) != len(b) {
 		panic("dimension missmatch")
 	}
 	for i := range res {
 		res[i] = a[i] * b[i]
 	}
+	return res
+}
+
+func (res Vec) DivH(a, b Vec) Vec {
+	if len(res) != len(a) || len(res) != len(b) {
+		panic("dimension missmatch")
+	}
+	for i := range res {
+		res[i] = a[i] / b[i]
+	}
+	return res
+}
+
+func (v Vec) AddSc(a float64) Vec {
+	for i := range v {
+		v[i] += a
+	}
+	return v
 }
 
 func (res Vec) Scal(a float64) Vec {
@@ -114,4 +138,10 @@ func (res Vec) Neg(v Vec) Vec {
 func (res Vec) Mul(A, B Matrix) {
 	resMat := FromArray(res, true, len(res), 1)
 	resMat.Mul(A, B)
+}
+
+func (res Vec) AddMul(A *Dense, x Vec, a float64) {
+	m, n := A.Size()
+	ops.Dgemv(blas.ColMajor, A.trans, m, n, a, A.data, A.stride, x, 1,
+		1, res, 1)
 }

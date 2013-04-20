@@ -2,7 +2,7 @@ package matrix
 
 import "github.com/dane-unltd/linalg/lapack"
 
-func (D *Dense) Svd(S Diag, U, Vt *Dense) {
+func (D *Dense) Svd(S Diag, U, Vt *Dense) lapack.Info {
 	if U.IsTr() {
 		U.T()
 	}
@@ -41,6 +41,6 @@ func (D *Dense) Svd(S Diag, U, Vt *Dense) {
 		panic("wrong dimensions of V")
 	}
 
-	/*info := */ ops.Dgesvd(jobu, jobvt, m, n, D.Copy().(*Dense).Array(), D.Stride(), S,
+	return ops.Dgesvd(jobu, jobvt, m, n, D.Copy().(*Dense).Array(), D.Stride(), S,
 		U.Array(), U.Stride(), Vt.Array(), Vt.Stride())
 }

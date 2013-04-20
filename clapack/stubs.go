@@ -27,8 +27,6 @@ func (Lapack) Dgges(jobvsl lapack.Job, jobvsr lapack.Job, s lapack.Sort, sel lap
 func (Lapack) Dgtsv(n int, nrhs int, dl []float64, d []float64, du []float64, b []float64, ldb int) lapack.Info {
 	return 0
 }
-func (Lapack) Dlacpy(ul blas.Uplo, m int, n int, a []float64, lda int, b []float64, ldb int) {
-}
 func (Lapack) Dorglq(m int, n int, k int, a []float64, lda int, tau []float64) lapack.Info {
 	return 0
 }

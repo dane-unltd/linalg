@@ -25,6 +25,13 @@ var (
 	_ lapack.Float64 = Lapack{}
 )
 
+func (Lapack) Dlacpy(ul blas.Uplo, m int, n int, a []float64, lda int, b []float64, ldb int) {
+	C.dlacpy_((*C.char)(unsafe.Pointer(&ul)),
+		(*C.int)(unsafe.Pointer(&m)), (*C.int)(unsafe.Pointer(&n)),
+		(*C.double)(unsafe.Pointer(&a[0])), (*C.int)(unsafe.Pointer(&lda)),
+		(*C.double)(unsafe.Pointer(&b[0])), (*C.int)(unsafe.Pointer(&ldb)))
+}
+
 // void dgbsv_(int *n, int *kl, int *ku, int *nrhs,
 //		double *AB, int *ldab, int *ipiv, double *b, int *ldb, int *info);
 func (Lapack) Dgbsv(n, kl, ku, nrhs int, A []float64, LDa int, ipiv []int32, B []float64, LDb int) lapack.Info {
