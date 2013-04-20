@@ -2,7 +2,7 @@ package lapack
 
 import "github.com/dane-unltd/linalg/matrix"
 
-func Dgsvd(D *matrix.DenseFloat64, S matrix.DiagFloat64, U, Vt *matrix.DenseFloat64) {
+func Dgsvd(D *matrix.Dense, S matrix.Diag, U, Vt *matrix.Dense) {
 	if U.IsTr() {
 		U.T()
 	}
@@ -41,6 +41,6 @@ func Dgsvd(D *matrix.DenseFloat64, S matrix.DiagFloat64, U, Vt *matrix.DenseFloa
 		panic("wrong dimensions of V")
 	}
 
-	/*info := */ Dgesvd(jobu, jobvt, m, n, D.Copy().(*matrix.DenseFloat64).Array(), D.Stride(), S,
+	/*info := */ Dgesvd(jobu, jobvt, m, n, D.Copy().(*matrix.Dense).Array(), D.Stride(), S,
 		U.Array(), U.Stride(), Vt.Array(), Vt.Stride())
 }

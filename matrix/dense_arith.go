@@ -4,7 +4,7 @@ import "fmt"
 
 import "github.com/kortschak/blas"
 
-func (res *DenseFloat64) Add(A, B Matrix) {
+func (res *Dense) Add(A, B Matrix) {
 	m, n := res.Size()
 	ma, na := A.Size()
 	mb, nb := B.Size()
@@ -14,9 +14,9 @@ func (res *DenseFloat64) Add(A, B Matrix) {
 		panic("dimension missmatch")
 	}
 	switch A := A.(type) {
-	case *DenseFloat64:
+	case *Dense:
 		switch B := B.(type) {
-		case *DenseFloat64:
+		case *Dense:
 			for c := 0; c < n; c++ {
 				res.ColView(c).Add(A.ColView(c), B.ColView(c))
 			}
@@ -27,7 +27,7 @@ func (res *DenseFloat64) Add(A, B Matrix) {
 	res.AddMM(A, B)
 }
 
-func (res *DenseFloat64) AddMM(A, B Matrix) {
+func (res *Dense) AddMM(A, B Matrix) {
 	m, n := res.Size()
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
@@ -36,7 +36,7 @@ func (res *DenseFloat64) AddMM(A, B Matrix) {
 	}
 }
 
-func (res *DenseFloat64) Sub(A, B Matrix) {
+func (res *Dense) Sub(A, B Matrix) {
 	m, n := res.Size()
 	ma, na := A.Size()
 	mb, nb := B.Size()
@@ -46,9 +46,9 @@ func (res *DenseFloat64) Sub(A, B Matrix) {
 		panic("dimension missmatch")
 	}
 	switch A := A.(type) {
-	case *DenseFloat64:
+	case *Dense:
 		switch B := B.(type) {
-		case *DenseFloat64:
+		case *Dense:
 			for c := 0; c < n; c++ {
 				res.ColView(c).Sub(A.ColView(c), B.ColView(c))
 			}
@@ -59,7 +59,7 @@ func (res *DenseFloat64) Sub(A, B Matrix) {
 	res.SubMM(A, B)
 }
 
-func (res *DenseFloat64) SubMM(A, B Matrix) {
+func (res *Dense) SubMM(A, B Matrix) {
 	m, n := res.Size()
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
@@ -68,7 +68,7 @@ func (res *DenseFloat64) SubMM(A, B Matrix) {
 	}
 }
 
-func (res *DenseFloat64) Mul(A, B Matrix) {
+func (res *Dense) Mul(A, B Matrix) {
 	m, n := res.Size()
 	ma, na := A.Size()
 	mb, nb := B.Size()
@@ -79,28 +79,28 @@ func (res *DenseFloat64) Mul(A, B Matrix) {
 	}
 
 	switch A := A.(type) {
-	case *DenseFloat64:
+	case *Dense:
 		switch B := B.(type) {
-		case *DenseFloat64:
+		case *Dense:
 			ops.Dgemm(blas.ColMajor, A.trans, B.trans, m, n, na,
 				1, A.data, A.stride, B.data, B.stride, 0,
 				res.data, res.stride)
 			return
-		case VecFloat64:
+		case Vec:
 			ops.Dgemm((blas.ColMajor), (A.trans), (blas.NoTrans),
 				m, n, na, 1, A.data, A.stride, B, len(B), 0,
 				res.data, res.stride)
 			return
-		case DiagFloat64:
+		case Diag:
 			for i := 0; i < n; i++ {
 				ops.Dcopy(m, A.ColView(i), 1, res.ColView(i), 1)
 				ops.Dscal(m, B[i], res.ColView(i), 1)
 			}
 			return
 		}
-	case DiagFloat64:
+	case Diag:
 		switch B := B.(type) {
-		case DiagFloat64:
+		case Diag:
 			for i := 0; i < m; i++ {
 				res.Set(i, i, A[i]*B[i])
 			}
@@ -112,7 +112,7 @@ func (res *DenseFloat64) Mul(A, B Matrix) {
 }
 
 //Slow general matrix multiplication
-func (res *DenseFloat64) MulMM(A, B Matrix) {
+func (res *Dense) MulMM(A, B Matrix) {
 	_, K := A.Size()
 	for i := 0; i < res.rows; i++ {
 		for j := 0; j < res.cols; j++ {

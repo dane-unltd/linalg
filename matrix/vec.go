@@ -1,29 +1,29 @@
 package matrix
 
-type VecFloat64 []float64
+type Vec []float64
 
-func NewVecFloat64(n int) VecFloat64 {
-	return make(VecFloat64, n)
+func NewVec(n int) Vec {
+	return make(Vec, n)
 }
 
-func (v VecFloat64) Size() (int, int) {
+func (v Vec) Size() (int, int) {
 	return len(v), 1
 }
 
-func (v VecFloat64) At(i, j int) float64 {
+func (v Vec) At(i, j int) float64 {
 	if j != 0 {
 		panic("j has to be 0")
 	}
 	return v[i]
 }
 
-func (v VecFloat64) Copy() interface{} {
-	vNew := make(VecFloat64, len(v))
+func (v Vec) Copy() interface{} {
+	vNew := make(Vec, len(v))
 	copy(vNew, v)
 	return vNew
 }
 
-func (v VecFloat64) Equals(x interface{}) bool {
+func (v Vec) Equals(x interface{}) bool {
 
 	M, ok := x.(Matrix)
 	if !ok {

@@ -15,7 +15,7 @@ func Benchmark_MatrixMulCblas(b *testing.B) {
 	b.StopTimer()
 	A := RandN(n, n)
 	B := RandN(n, n)
-	D := DiagFloat64(B.Array())
+	D := Diag(B.Array())
 	D = D[:n]
 	res := RandN(n, n)
 	b.StartTimer()
@@ -29,7 +29,7 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 	b.StopTimer()
 	A := RandN(n, n)
 	B := RandN(n, n)
-	D := DiagFloat64(B.Array())
+	D := Diag(B.Array())
 	D = D[:n]
 	res := RandN(n, n)
 	b.StartTimer()
@@ -82,7 +82,7 @@ func TestMatrixBlas(t *testing.T) {
 	A := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
 	B := FromArrayD([]float64{1, 2, 3, 4}, true, 2, 2)
 
-	res := NewDenseFloat64(2, 2)
+	res := NewDense(2, 2)
 
 	res.Mul(A, B)
 
