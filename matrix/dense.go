@@ -112,6 +112,12 @@ func (D *Dense) Copy() interface{} {
 	return &Dc
 }
 
+func (D *Dense) TrView() *Dense {
+	Dt := *D
+	Dt.T()
+	return &Dt
+}
+
 func (D *Dense) Equals(x interface{}) bool {
 	D2, ok := x.(*Dense)
 	if !ok {
