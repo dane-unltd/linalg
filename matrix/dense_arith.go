@@ -5,12 +5,11 @@ import "fmt"
 import "github.com/kortschak/blas"
 
 func (res *Dense) Add(A, B Matrix) {
-	m, n := res.Size()
 	ma, na := A.Size()
 	mb, nb := B.Size()
 
-	if ma != m || na != n || mb != m || nb != n {
-		fmt.Println(m, n, ma, na, mb, nb)
+	if ma != mb || na != nb {
+		fmt.Println(ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
 	switch A := A.(type) {
@@ -18,7 +17,7 @@ func (res *Dense) Add(A, B Matrix) {
 		switch B := B.(type) {
 		case *Dense:
 			if !A.IsTr() && !B.IsTr() {
-				for c := 0; c < n; c++ {
+				for c := 0; c < na; c++ {
 					res.ColView(c).Add(A.ColView(c), B.ColView(c))
 				}
 				return
@@ -30,7 +29,7 @@ func (res *Dense) Add(A, B Matrix) {
 }
 
 func (res *Dense) AddMM(A, B Matrix) {
-	m, n := res.Size()
+	m, n := A.Size()
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			res.Set(i, j, A.At(i, j)+B.At(i, j))
@@ -39,12 +38,11 @@ func (res *Dense) AddMM(A, B Matrix) {
 }
 
 func (res *Dense) Sub(A, B Matrix) {
-	m, n := res.Size()
 	ma, na := A.Size()
 	mb, nb := B.Size()
 
-	if ma != m || na != n || mb != m || nb != n {
-		fmt.Println(m, n, ma, na, mb, nb)
+	if ma != mb || na != nb {
+		fmt.Println(ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
 	switch A := A.(type) {
@@ -52,7 +50,7 @@ func (res *Dense) Sub(A, B Matrix) {
 		switch B := B.(type) {
 		case *Dense:
 			if !A.IsTr() && !B.IsTr() {
-				for c := 0; c < n; c++ {
+				for c := 0; c < na; c++ {
 					res.ColView(c).Sub(A.ColView(c), B.ColView(c))
 				}
 				return
@@ -64,7 +62,7 @@ func (res *Dense) Sub(A, B Matrix) {
 }
 
 func (res *Dense) SubMM(A, B Matrix) {
-	m, n := res.Size()
+	m, n := A.Size()
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			res.Set(i, j, A.At(i, j)-B.At(i, j))
@@ -73,11 +71,11 @@ func (res *Dense) SubMM(A, B Matrix) {
 }
 
 func (res *Dense) Mul(A, B Matrix) {
-	m, n := res.Size()
 	ma, na := A.Size()
 	mb, nb := B.Size()
+	m, n := ma, nb
 
-	if ma != m || nb != n || na != mb {
+	if na != mb {
 		fmt.Println(m, n, ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
