@@ -1,41 +1,30 @@
 package matrix
 
-type Expr interface {
-	Size() (int, int)
+type Adder interface {
+	Add(A, B Matrix)
 }
 
-type mulExpr struct {
-	m, n int
-	A, B Expr
+type Muler interface {
+	Add(A, B Matrix)
 }
 
-func (e *mulExpr) Size() (int, int) {
-	return m, n
+type Arith interface {
+	Adder
+	Muler
 }
 
-type divExpr struct {
-	m, n int
-	A, B Expr
+func Mul(A, B Expr) Expr {
+	m, _ := A.Size()
+	_, n := B.Size()
+	return &mulExpr{m, n, A, B}
 }
-
-func (e *divExpr) Size() (int, int) {
-	return m, n
+func Add(A, B Expr) Expr {
+	m, _ := A.Size()
+	_, n := B.Size()
+	return &addExpr{m, n, A, B}
 }
-
-type addExpr struct {
-	m, n int
-	A, B Expr
-}
-
-func (e *addExpr) Size() (int, int) {
-	return m, n
-}
-
-type subExpr struct {
-	m, n int
-	A, B Expr
-}
-
-func (e *subExpr) Size() (int, int) {
-	return m, n
+func Sub(A, B Expr) Expr {
+	m, _ := A.Size()
+	_, n := B.Size()
+	return &subExpr{m, n, A, B}
 }
