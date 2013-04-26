@@ -4,13 +4,18 @@ type Adder interface {
 	Add(A, B Matrix)
 }
 
+type Suber interface {
+	Sub(A, B Matrix)
+}
+
 type Muler interface {
-	Add(A, B Matrix)
+	Mul(A, B Matrix)
 }
 
 type Arith interface {
 	Adder
 	Muler
+	Suber
 }
 
 func Mul(A, B Expr) Expr {

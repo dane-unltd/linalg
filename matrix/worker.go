@@ -21,7 +21,8 @@ func (w *worker) run() {
 	}
 }
 
+var wrk = &worker{}
+
 func init() {
-	w := worker{}
-	go w.run()
+	go wrk.run()
 }

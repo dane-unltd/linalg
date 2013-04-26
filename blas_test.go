@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var n = 100
+var n = 10
 
 type cblasops struct {
 	cblas.Blas
@@ -24,12 +24,17 @@ func Benchmark_MatrixMulCblas(b *testing.B) {
 	b.StopTimer()
 	A := matrix.RandN(n, n)
 	B := matrix.RandN(n, n)
-	D := matrix.Diag(B.Array())
-	D = D[:n]
-	res := matrix.RandN(n, n)
+	C := matrix.RandN(n, n)
+	D := matrix.RandN(n, n)
+	E := matrix.RandN(n, n)
+	res1 := matrix.RandN(n, n)
+	res2 := matrix.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		res.Mul(A, B)
+		res1.Mul(A, B)
+		res2.Mul(res1, C)
+		res1.Mul(res2, D)
+		res1.Mul(res2, E)
 	}
 }
 
@@ -38,12 +43,33 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 	b.StopTimer()
 	A := matrix.RandN(n, n)
 	B := matrix.RandN(n, n)
-	D := matrix.Diag(B.Array())
-	D = D[:n]
-	res := matrix.RandN(n, n)
+	C := matrix.RandN(n, n)
+	D := matrix.RandN(n, n)
+	E := matrix.RandN(n, n)
+	res1 := matrix.RandN(n, n)
+	res2 := matrix.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		res.Mul(A, B)
+		res1.Mul(A, B)
+		res2.Mul(res1, C)
+		res1.Mul(res2, D)
+		res1.Mul(res2, E)
+	}
+}
+
+func Benchmark_MatrixMulEval(b *testing.B) {
+	matrix.Register(cblasops{})
+	b.StopTimer()
+	A := matrix.RandN(n, n)
+	B := matrix.RandN(n, n)
+	C := matrix.RandN(n, n)
+	D := matrix.RandN(n, n)
+	E := matrix.RandN(n, n)
+	res := matrix.RandN(n, n)
+	expr := matrix.Mul(matrix.Mul(matrix.Mul(matrix.Mul(A, B), C), D), E)
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		res.FromExpr(expr)
 	}
 }
 
@@ -86,10 +112,15 @@ func Benchmark_DdotGo(b *testing.B) {
 	}
 }
 
-func TestMatrixBlas(t *testing.T) {
+func TestMul(t *testing.T) {
 	matrix.Register(goblasops{})
 	A := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
 	B := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
+	C := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
+
+	mul := matrix.Mul(matrix.Mul(A, B), C)
+	resE := matrix.NewDense(2)
+	resE.FromExpr(mul)
 
 	temp := matrix.NewDense(2)
 
@@ -101,6 +132,12 @@ func TestMatrixBlas(t *testing.T) {
 	temp.Sub(res, res1)
 	if temp.VecView().Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, res1)
+	}
+
+	temp.Mul(res, C)
+	temp.Sub(temp, resE)
+	if temp.VecView().Nrm2Sq() > 0.01 {
+		t.Error("wrong result", temp)
 	}
 
 	A.T()

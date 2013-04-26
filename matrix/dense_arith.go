@@ -12,6 +12,11 @@ func (res *Dense) Add(A, B Matrix) {
 		fmt.Println(ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
+	res.rows = ma
+	res.cols = na
+	res.stride = ma
+	res.trans = blas.NoTrans
+
 	switch A := A.(type) {
 	case *Dense:
 		switch B := B.(type) {
@@ -45,6 +50,11 @@ func (res *Dense) Sub(A, B Matrix) {
 		fmt.Println(ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
+	res.rows = ma
+	res.cols = na
+	res.stride = ma
+	res.trans = blas.NoTrans
+
 	switch A := A.(type) {
 	case *Dense:
 		switch B := B.(type) {
@@ -79,6 +89,10 @@ func (res *Dense) Mul(A, B Matrix) {
 		fmt.Println(m, n, ma, na, mb, nb)
 		panic("dimension missmatch")
 	}
+	res.rows = ma
+	res.cols = nb
+	res.stride = ma
+	res.trans = blas.NoTrans
 
 	switch A := A.(type) {
 	case *Dense:

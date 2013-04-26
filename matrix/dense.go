@@ -197,3 +197,7 @@ func (D *Dense) dataIx(i, j int) int {
 	}
 	return i + j*D.stride
 }
+
+func (D *Dense) eval(res Arith, w *worker) {
+	//TODO
+}
