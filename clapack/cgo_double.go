@@ -1,7 +1,7 @@
 // Copyright (c) Harri Rautila, 2012
 
 // This file is part of go.opt/linalg/lapack package.
-// It is free software, distributed under the terms of GNU Lesser General Public 
+// It is free software, distributed under the terms of GNU Lesser General Public
 // License Version 3, or any later version. See the COPYING tile included in this archive.
 
 package clapack
@@ -13,7 +13,7 @@ package clapack
 import "C"
 import (
 	"github.com/dane-unltd/linalg/lapack"
-	"github.com/kortschak/blas"
+	"github.com/gonum/blas"
 	"unsafe"
 )
 
@@ -535,7 +535,7 @@ func (Lapack) Dsyevx(jobz lapack.Job, srange lapack.Range, uplo blas.Uplo, N int
 		(*C.char)(unsafe.Pointer(&srange)),
 		(*C.char)(unsafe.Pointer(&uplo)),
 		(*C.int)(unsafe.Pointer(&N)), // int *n
-		nil,                          // double *A
+		nil, // double *A
 		(*C.int)(unsafe.Pointer(&lda)),       // int *lda
 		(*C.double)(unsafe.Pointer(&vl)),     // double *vl
 		(*C.double)(unsafe.Pointer(&vu)),     // double *vu
@@ -543,13 +543,13 @@ func (Lapack) Dsyevx(jobz lapack.Job, srange lapack.Range, uplo blas.Uplo, N int
 		(*C.int)(unsafe.Pointer(&iu)),        // int *iu
 		(*C.double)(unsafe.Pointer(&abstol)), // double *abstol
 		(*C.int)(unsafe.Pointer(&M)),         // int *m
-		nil,                                  // double *W
-		nil,                                  // double *Z
+		nil, // double *W
+		nil, // double *Z
 		(*C.int)(unsafe.Pointer(&LDz)), // int *ldz
-		nil,                            // double *work
+		nil, // double *work
 		(*C.int)(unsafe.Pointer(&work)),  // int *lwork
 		(*C.int)(unsafe.Pointer(&lwork)), // int *iwork
-		nil,                              // int *ifail
+		nil, // int *ifail
 		(*C.int)(unsafe.Pointer(&info))) // int *info
 
 	// allocate work area

@@ -1,6 +1,6 @@
 package goblas
 
-import "github.com/kortschak/blas"
+import "github.com/gonum/blas"
 
 func (Blas) Dgemm(o blas.Order, tA, tB blas.Transpose, m int, n int, k int,
 	alpha float64, a []float64, lda int, b []float64, ldb int,

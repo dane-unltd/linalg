@@ -1,6 +1,6 @@
 package matrix
 
-import "github.com/kortschak/blas"
+import "github.com/gonum/blas"
 
 func (res Vec) Normalize(v Vec) Vec {
 	ops.Dcopy(len(res), v, 1, res, 1)

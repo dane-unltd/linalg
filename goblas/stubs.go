@@ -1,6 +1,6 @@
 package goblas
 
-import "github.com/kortschak/blas"
+import "github.com/gonum/blas"
 
 func (Blas) Drotm(n int, x []float64, incX int, y []float64, incY int, p *blas.DrotmParams) {
 }

@@ -2,7 +2,7 @@ package matrix
 
 import "fmt"
 
-import "github.com/kortschak/blas"
+import "github.com/gonum/blas"
 
 func (res *Dense) Add(A, B Matrix) {
 	ma, na := A.Size()

@@ -1,6 +1,6 @@
 package goblas
 
-import "github.com/kortschak/blas"
+import "github.com/gonum/blas"
 
 type Blas struct{}
 
