@@ -3,7 +3,7 @@ package matrix
 import (
 	//	"fmt"
 	"github.com/dane-unltd/linalg/lapack"
-	"github.com/kortschak/blas"
+	"github.com/gonum/blas"
 	"sync"
 )
 

@@ -1,6 +1,6 @@
 package matrix
 
-import "github.com/kortschak/blas"
+import "github.com/gonum/blas"
 
 func (res Vec) Trsv(A *Dense, b Vec) {
 	n := len(res)

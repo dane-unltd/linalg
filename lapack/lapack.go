@@ -1,7 +1,7 @@
 package lapack
 
 import (
-	"github.com/kortschak/blas"
+	"github.com/gonum/blas"
 )
 
 type Job byte
@@ -15,7 +15,7 @@ type SelectG func(float64, float64, float64) bool
 type Float64 interface {
 	Dlacpy(ul blas.Uplo, m int, n int, a []float64, lda int, b []float64, ldb int)
 
-	//Missing: bdsdc bdsqr disna gbbrd gbcon gbequ gbequb gbrfs gbrfsx gbsvx gbsvxx 
+	//Missing: bdsdc bdsqr disna gbbrd gbcon gbequ gbequb gbrfs gbrfsx gbsvx gbsvxx
 	Dgbsv(n int, kl int, ku int, nrhs int, ab []float64, ldab int, ipiv []int32, b []float64, ldb int) Info
 	Dgbtrf(m int, n int, kl int, ku int, ab []float64, ldab int, ipiv []int32) Info
 
@@ -51,7 +51,7 @@ type Float64 interface {
 	Dormlq(s blas.Side, ta blas.Transpose, m int, n int, k int, a []float64, lda int, tau []float64, c []float64, ldc int) Info
 	Dormqr(s blas.Side, ta blas.Transpose, m int, n int, k int, a []float64, lda int, tau []float64, c []float64, ldc int) Info
 
-	//Missing: pbsvx pftrf pftri pftrs pocon poequ poequb porfs porfsx 
+	//Missing: pbsvx pftrf pftri pftrs pocon poequ poequb porfs porfsx
 	Dpbsv(ul blas.Uplo, n int, kd int, nrhs int, ab []float64, ldab int, b []float64, ldb int) Info
 	Dpbtrf(ul blas.Uplo, n int, kd int, ab []float64, ldab int) Info
 	Dpbtrs(ul blas.Uplo, n int, kd int, nrhs int, ab []float64, ldab int, b []float64, ldb int) Info

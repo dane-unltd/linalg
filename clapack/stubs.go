@@ -2,7 +2,7 @@ package clapack
 
 import (
 	"github.com/dane-unltd/linalg/lapack"
-	"github.com/kortschak/blas"
+	"github.com/gonum/blas"
 )
 
 func (Lapack) Dgees(jobvs lapack.Job, s lapack.Sort, sel lapack.Select, n int, a []float64, lda int, sdim int, wr []float64, wi []float64, vs []float64, ldvs int) lapack.Info {
