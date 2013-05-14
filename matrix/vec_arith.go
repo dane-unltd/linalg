@@ -136,7 +136,7 @@ func (res Vec) Neg(v Vec) Vec {
 }
 
 func (res Vec) Mul(A, B Matrix) {
-	resMat := FromArray(res, true, len(res), 1)
+	resMat := NewFromArray(res, false, len(res), 1)
 	resMat.Mul(A, B)
 }
 

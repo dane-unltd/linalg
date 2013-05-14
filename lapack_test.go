@@ -6,7 +6,7 @@ import (
 )
 
 func TestSvd(t *testing.T) {
-	matrix.Register(goblasops{})
+	matrix.Register(cblasops{})
 	A := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
 	S := matrix.NewDiag(2)
 	U := matrix.NewDense(2, 2)
@@ -26,7 +26,7 @@ func TestSvd(t *testing.T) {
 	}
 }
 func TestChol(t *testing.T) {
-	matrix.Register(goblasops{})
+	matrix.Register(cblasops{})
 	A := matrix.FromArray([]float64{1, 2, 3, 4}, true, 2, 2)
 	At := A.Copy().(*matrix.Dense).T()
 	AtA := matrix.NewDense(2)

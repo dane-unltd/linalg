@@ -73,7 +73,7 @@ func RandN(dims ...int) *Dense {
 	return D
 }
 
-func FromArray(data []float64, useArray bool, dims ...int) *Dense {
+func NewFromArray(data []float64, makeCopy bool, dims ...int) *Dense {
 	num := 1
 	for _, v := range dims {
 		num *= v
@@ -83,7 +83,7 @@ func FromArray(data []float64, useArray bool, dims ...int) *Dense {
 	}
 
 	var D *Dense
-	if useArray {
+	if !makeCopy {
 		if len(dims) == 0 {
 			return nil
 		}
@@ -105,11 +105,35 @@ func FromArray(data []float64, useArray bool, dims ...int) *Dense {
 	return D
 }
 
-func (D *Dense) Copy() interface{} {
-	Dc := *D
-	Dc.data = make([]float64, len(D.data))
-	copy(Dc.data, D.data)
-	return &Dc
+func (D *Dense) Copy(A Matrix) {
+	m, n := A.Size()
+	if len(D.data) < m*n {
+		panic("not enough space for copy")
+	}
+	switch A := A.(type) {
+	case *Dense:
+		D.dense = A.dense
+		D.stride = A.rows
+		if A.stride == A.rows {
+			copy(D.data[:m*n], A.data)
+		} else {
+			for c := 0; c < A.cols; c++ {
+				copy(D.data[c*D.stride:(c+1)*D.stride], A.data[c*A.stride:])
+			}
+		}
+		return
+	}
+
+	D.rows = m
+	D.stride = m
+	D.cols = n
+	D.trans = blas.NoTrans
+
+	for i := 0; i < m; i++ {
+		for j := 0; j < m; j++ {
+			D.Set(i, j, A.At(i, j))
+		}
+	}
 }
 
 func (D *Dense) TrView() *Dense {
