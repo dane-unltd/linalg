@@ -41,6 +41,8 @@ func (D *Dense) Svd(S Diag, U, Vt *Dense) lapack.Info {
 		panic("wrong dimensions of V")
 	}
 
-	return ops.Dgesvd(jobu, jobvt, m, n, D.Copy().(*Dense).Array(), D.Stride(), S,
+	Dcp := make([]float64, D.stride*n)
+	copy(Dcp, D.data)
+	return ops.Dgesvd(jobu, jobvt, m, n, Dcp, D.Stride(), S,
 		U.Array(), U.Stride(), Vt.Array(), Vt.Stride())
 }
