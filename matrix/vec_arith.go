@@ -11,10 +11,6 @@ func (v Vec) Nrm2Sq() float64 {
 	return ops.Ddot(len(v), v, 1, v, 1)
 }
 
-func (res Vec) CopyFrom(v Vec) {
-	ops.Dcopy(len(res), v, 1, res, 1)
-}
-
 func (v Vec) Nrm2() float64 {
 	return ops.Dnrm2(len(v), v, 1)
 }
