@@ -7,6 +7,9 @@ func NewDiag(m int) Diag {
 }
 
 func (D Diag) At(i, j int) float64 {
+	if i > len(D) || j > len(D) {
+		panic("index out of bounds")
+	}
 	if i == j {
 		return D[i]
 	}
@@ -24,8 +27,9 @@ func (D Diag) Size() (int, int) {
 	return len(D), len(D)
 }
 
-func (D Diag) Copy() Matrix {
-	dNew := make(Diag, len(D))
-	copy(dNew, D)
-	return dNew
+func (dst Diag) Copy(src Diag) {
+	if len(dst) != len(src) {
+		panic("dimension missmatch")
+	}
+	copy(dst, src)
 }

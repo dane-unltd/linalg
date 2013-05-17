@@ -17,10 +17,11 @@ func (v Vec) At(i, j int) float64 {
 	return v[i]
 }
 
-func (v Vec) Copy() interface{} {
-	vNew := make(Vec, len(v))
-	copy(vNew, v)
-	return vNew
+func (dst Vec) Copy(src Vec) {
+	if len(dst) != len(src) {
+		panic("dimension missmatch")
+	}
+	ops.Dcopy(len(dst), src, 1, dst, 1)
 }
 
 func (v Vec) Equals(x interface{}) bool {
