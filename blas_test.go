@@ -3,12 +3,13 @@ package linalg
 import (
 	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
+	"github.com/dane-unltd/linalg/math3"
 	"github.com/dane-unltd/linalg/matrix"
 	"github.com/kortschak/cblas"
 	"testing"
 )
 
-var n = 100
+var n = 50
 
 type cblasops struct {
 	cblas.Blas
@@ -18,6 +19,24 @@ type cblasops struct {
 type goblasops struct {
 	goblas.Blas
 	clapack.Lapack
+}
+
+func Benchmark_MatrixMulMath3(b *testing.B) {
+	b.StopTimer()
+	A := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	B := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	C := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	D := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	E := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	res1 := math3.Mat{}
+	res2 := math3.Mat{}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		res1.Mul(&A, &B)
+		res2.Mul(&res1, &C)
+		res1.Mul(&res2, &D)
+		res2.Mul(&res1, &E)
+	}
 }
 
 func Benchmark_MatrixMulCblas(b *testing.B) {
