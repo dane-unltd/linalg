@@ -4,23 +4,23 @@ import (
 	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
 	"github.com/dane-unltd/linalg/matrix"
-	//"github.com/kortschak/cblas"
+	"github.com/kortschak/cblas"
 	"testing"
 )
 
-var n = 10
+var n = 100
 
-/*type cblasops struct {
+type cblasops struct {
 	cblas.Blas
 	clapack.Lapack
-}*/
+}
 
 type goblasops struct {
 	goblas.Blas
 	clapack.Lapack
 }
 
-/*func Benchmark_MatrixMulCblas(b *testing.B) {
+func Benchmark_MatrixMulCblas(b *testing.B) {
 	matrix.Register(cblasops{})
 	b.StopTimer()
 	A := matrix.RandN(n, n)
@@ -35,9 +35,9 @@ type goblasops struct {
 		res1.Mul(A, B)
 		res2.Mul(res1, C)
 		res1.Mul(res2, D)
-		res1.Mul(res2, E)
+		res2.Mul(res1, E)
 	}
-}*/
+}
 
 func Benchmark_MatrixMulGo(b *testing.B) {
 	matrix.Register(goblasops{})
@@ -54,7 +54,7 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 		res1.Mul(A, B)
 		res2.Mul(res1, C)
 		res1.Mul(res2, D)
-		res1.Mul(res2, E)
+		res2.Mul(res1, E)
 	}
 }
 
@@ -74,7 +74,7 @@ func Benchmark_MatrixMulEval(b *testing.B) {
 	}
 }
 
-/*func Benchmark_Nrm2Cblas(b *testing.B) {
+func Benchmark_Nrm2Cblas(b *testing.B) {
 	matrix.Register(cblasops{})
 	A := matrix.RandN(n, n)
 	v := A.VecView()
@@ -82,7 +82,7 @@ func Benchmark_MatrixMulEval(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		v.Nrm2()
 	}
-}*/
+}
 
 func Benchmark_Nrm2Go(b *testing.B) {
 	matrix.Register(goblasops{})
@@ -94,7 +94,7 @@ func Benchmark_Nrm2Go(b *testing.B) {
 	}
 }
 
-/*func Benchmark_DdotCblas(b *testing.B) {
+func Benchmark_DdotCblas(b *testing.B) {
 	matrix.Register(cblasops{})
 	A := matrix.RandN(n, n)
 	v := A.VecView()
@@ -102,7 +102,7 @@ func Benchmark_Nrm2Go(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		matrix.Dot(v, v)
 	}
-}*/
+}
 
 func Benchmark_DdotGo(b *testing.B) {
 	matrix.Register(goblasops{})
