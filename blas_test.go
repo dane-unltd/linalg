@@ -1,9 +1,9 @@
 package linalg
 
 import (
+	"github.com/dane-unltd/engine/math3"
 	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
-	"github.com/dane-unltd/linalg/math3"
 	"github.com/dane-unltd/linalg/matrix"
 	"github.com/kortschak/cblas"
 	"testing"

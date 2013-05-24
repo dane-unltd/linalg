@@ -138,6 +138,9 @@ func (res Vec) Mul(A, B Matrix) {
 
 func (res Vec) AddMul(A *Dense, x Vec, a float64) {
 	m, n := A.Size()
+	if A.trans == blas.Trans {
+		m, n = n, m
+	}
 	ops.Dgemv(blas.ColMajor, A.trans, m, n, a, A.data, A.stride, x, 1,
 		1, res, 1)
 }
