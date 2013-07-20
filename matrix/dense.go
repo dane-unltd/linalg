@@ -57,7 +57,7 @@ func Eye(n int) *Dense {
 	return D
 }
 
-func RandU(dims ...int) *Dense {
+func Rand(dims ...int) *Dense {
 	D := NewDense(dims...)
 	for i := range D.data {
 		D.data[i] = rand.Float64()

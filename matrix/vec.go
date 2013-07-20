@@ -1,9 +1,19 @@
 package matrix
 
+import "math/rand"
+
 type Vec []float64
 
 func NewVec(n int) Vec {
 	return make(Vec, n)
+}
+
+func RandVec(n int) Vec {
+	v := NewVec(n)
+	for i := range v {
+		v[i] = rand.Float64()
+	}
+	return v
 }
 
 func (v Vec) Size() (int, int) {
