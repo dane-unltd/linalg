@@ -1,5 +1,6 @@
-package matrix
+package mat
 
+/*
 type Adder interface {
 	Add(A, B Matrix)
 }
@@ -32,4 +33,4 @@ func Sub(A, B Expr) Expr {
 	m, _ := A.Size()
 	_, n := B.Size()
 	return &subExpr{m, n, A, B}
-}
+}*/

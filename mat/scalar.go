@@ -1,4 +1,4 @@
-package matrix
+package mat
 
 type Scalar float64
 

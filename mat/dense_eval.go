@@ -1,8 +1,10 @@
-package matrix
+package mat
 
+/*
 func (D *Dense) FromExpr(e Expr) {
 	done := make(chan struct{})
 	req <- Request{D, e, done}
 
 	<-done
 }
+*/

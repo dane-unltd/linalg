@@ -4,12 +4,12 @@ import (
 	"github.com/dane-unltd/engine/math3"
 	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
-	"github.com/dane-unltd/linalg/matrix"
+	"github.com/dane-unltd/linalg/mat"
 	"github.com/kortschak/cblas"
 	"testing"
 )
 
-var n = 50
+var n = 3
 
 type cblasops struct {
 	cblas.Blas
@@ -40,15 +40,15 @@ func Benchmark_MatrixMulMath3(b *testing.B) {
 }
 
 func Benchmark_MatrixMulCblas(b *testing.B) {
-	matrix.Register(cblasops{})
+	mat.Register(cblasops{})
 	b.StopTimer()
-	A := matrix.RandN(n, n)
-	B := matrix.RandN(n, n)
-	C := matrix.RandN(n, n)
-	D := matrix.RandN(n, n)
-	E := matrix.RandN(n, n)
-	res1 := matrix.RandN(n, n)
-	res2 := matrix.RandN(n, n)
+	A := mat.RandN(n, n)
+	B := mat.RandN(n, n)
+	C := mat.RandN(n, n)
+	D := mat.RandN(n, n)
+	E := mat.RandN(n, n)
+	res1 := mat.RandN(n, n)
+	res2 := mat.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		res1.Mul(A, B)
@@ -59,15 +59,15 @@ func Benchmark_MatrixMulCblas(b *testing.B) {
 }
 
 func Benchmark_MatrixMulGo(b *testing.B) {
-	matrix.Register(goblasops{})
+	mat.Register(goblasops{})
 	b.StopTimer()
-	A := matrix.RandN(n, n)
-	B := matrix.RandN(n, n)
-	C := matrix.RandN(n, n)
-	D := matrix.RandN(n, n)
-	E := matrix.RandN(n, n)
-	res1 := matrix.RandN(n, n)
-	res2 := matrix.RandN(n, n)
+	A := mat.RandN(n, n)
+	B := mat.RandN(n, n)
+	C := mat.RandN(n, n)
+	D := mat.RandN(n, n)
+	E := mat.RandN(n, n)
+	res1 := mat.RandN(n, n)
+	res2 := mat.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		res1.Mul(A, B)
@@ -77,25 +77,26 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 	}
 }
 
+/*
 func Benchmark_MatrixMulEval(b *testing.B) {
-	matrix.Register(goblasops{})
+	mat.Register(cblasops{})
 	b.StopTimer()
-	A := matrix.RandN(n, n)
-	B := matrix.RandN(n, n)
-	C := matrix.RandN(n, n)
-	D := matrix.RandN(n, n)
-	E := matrix.RandN(n, n)
-	res := matrix.RandN(n, n)
-	expr := matrix.Mul(matrix.Mul(matrix.Mul(matrix.Mul(A, B), C), D), E)
+	A := mat.RandN(n, n)
+	B := mat.RandN(n, n)
+	C := mat.RandN(n, n)
+	D := mat.RandN(n, n)
+	E := mat.RandN(n, n)
+	res := mat.RandN(n, n)
+	expr := mat.Mul(mat.Mul(mat.Mul(mat.Mul(A, B), C), D), E)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		res.FromExpr(expr)
 	}
-}
+}*/
 
 func Benchmark_Nrm2Cblas(b *testing.B) {
-	matrix.Register(cblasops{})
-	A := matrix.RandN(n, n)
+	mat.Register(cblasops{})
+	A := mat.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
@@ -104,8 +105,8 @@ func Benchmark_Nrm2Cblas(b *testing.B) {
 }
 
 func Benchmark_Nrm2Go(b *testing.B) {
-	matrix.Register(goblasops{})
-	A := matrix.RandN(n, n)
+	mat.Register(goblasops{})
+	A := mat.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
@@ -114,39 +115,35 @@ func Benchmark_Nrm2Go(b *testing.B) {
 }
 
 func Benchmark_DdotCblas(b *testing.B) {
-	matrix.Register(cblasops{})
-	A := matrix.RandN(n, n)
+	mat.Register(cblasops{})
+	A := mat.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
-		matrix.Dot(v, v)
+		mat.Dot(v, v)
 	}
 }
 
 func Benchmark_DdotGo(b *testing.B) {
-	matrix.Register(goblasops{})
-	A := matrix.RandN(n, n)
+	mat.Register(goblasops{})
+	A := mat.RandN(n, n)
 	v := A.VecView()
 
 	for i := 0; i < b.N; i++ {
-		matrix.Dot(v, v)
+		mat.Dot(v, v)
 	}
 }
 
 func TestMul(t *testing.T) {
-	matrix.Register(goblasops{})
-	A := matrix.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
-	B := matrix.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
-	C := matrix.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
+	mat.Register(goblasops{})
+	A := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
+	B := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
+	C := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
 
-	mul := matrix.Mul(matrix.Mul(A, B), C)
-	resE := matrix.NewDense(2)
-	resE.FromExpr(mul)
+	temp := mat.NewDense(2)
 
-	temp := matrix.NewDense(2)
-
-	res := matrix.NewDense(2)
-	res1 := matrix.NewFromArray([]float64{7, 10, 15, 22}, false, 2, 2)
+	res := mat.NewDense(2)
+	res1 := mat.NewFromArray([]float64{7, 10, 15, 22}, false, 2, 2)
 
 	res.Mul(A, B)
 
@@ -156,16 +153,11 @@ func TestMul(t *testing.T) {
 	}
 
 	temp.Mul(res, C)
-	temp.Sub(temp, resE)
-	if temp.VecView().Nrm2Sq() > 0.01 {
-		t.Error("wrong result", temp)
-	}
 
-	A.T()
-	B.T()
-	res.Mul(A, B)
+	At := A.TrView()
+	Bt := B.TrView()
+	res.Mul(At, Bt)
 
-	A.T()
-	res.Mul(A, B)
+	res.Mul(At, B)
 
 }

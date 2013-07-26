@@ -1,4 +1,4 @@
-package matrix
+package mat
 
 import "math/rand"
 import "github.com/gonum/blas"
@@ -7,6 +7,7 @@ type dense struct {
 	rows, cols int
 	stride     int
 	trans      blas.Transpose
+	view       bool
 }
 
 func (D *dense) Size() (int, int) {
@@ -138,7 +139,8 @@ func (D *Dense) Copy(A Matrix) {
 
 func (D *Dense) TrView() *Dense {
 	Dt := *D
-	Dt.T()
+	Dt.transp()
+	Dt.view = true
 	return &Dt
 }
 
@@ -160,7 +162,7 @@ func (D *Dense) Set(i, j int, v float64) {
 	D.data[ix] = v
 }
 
-func (D *Dense) T() *Dense {
+func (D *Dense) transp() *Dense {
 	if D.IsTr() {
 		D.trans = blas.NoTrans
 		return D
@@ -220,8 +222,4 @@ func (D *Dense) dataIx(i, j int) int {
 		return j + i*D.stride
 	}
 	return i + j*D.stride
-}
-
-func (D *Dense) eval(res Arith, w *worker) {
-	//TODO
 }

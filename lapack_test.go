@@ -1,22 +1,22 @@
 package linalg
 
 import (
-	"github.com/dane-unltd/linalg/matrix"
+	"github.com/dane-unltd/linalg/mat"
 	"testing"
 )
 
 func TestSvd(t *testing.T) {
-	matrix.Register(goblasops{})
-	A := matrix.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
-	S := matrix.NewDiag(2)
-	U := matrix.NewDense(2, 2)
-	Vt := matrix.NewDense(2, 2)
+	mat.Register(goblasops{})
+	A := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
+	S := mat.NewVec(2)
+	U := mat.NewDense(2, 2)
+	Vt := mat.NewDense(2, 2)
 
-	A.Svd(S, U, Vt)
+	A.Svd(S, U, Vt, false)
 
-	A2 := matrix.NewDense(2, 2)
-	A3 := matrix.NewDense(2, 2)
-	A2.Mul(U, S)
+	A2 := mat.NewDense(2, 2)
+	A3 := mat.NewDense(2, 2)
+	A2.ScalCols(U, S)
 	A3.Mul(A2, Vt)
 
 	A2.Sub(A3, A)
@@ -26,26 +26,21 @@ func TestSvd(t *testing.T) {
 	}
 }
 func TestChol(t *testing.T) {
-	matrix.Register(goblasops{})
-	A := matrix.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
-	At := matrix.NewDense(2)
-	At.Copy(A)
-	At.T()
-	AtA := matrix.NewDense(2)
+	mat.Register(goblasops{})
+	A := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
+	At := A.TrView()
+	AtA := mat.NewDense(2)
 	AtA.Mul(At, A)
 
-	R := matrix.NewDense(2)
-	Rt := matrix.NewDense(2)
+	R := mat.NewDense(2)
+	Rt := R.TrView()
 
 	AtA.Chol(R)
 
-	Rt.Copy(R)
-	Rt.T()
-
-	A2 := matrix.NewDense(2)
+	A2 := mat.NewDense(2)
 	A2.Mul(Rt, R)
 
-	A3 := matrix.NewDense(2)
+	A3 := mat.NewDense(2)
 	A3.Sub(A2, AtA)
 
 	if A3.VecView().Nrm2Sq() > 0.01 {

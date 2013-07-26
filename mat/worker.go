@@ -1,5 +1,6 @@
-package matrix
+package mat
 
+/*
 type Request struct {
 	res  Arith
 	expr Expr
@@ -25,4 +26,4 @@ var wrk = &worker{}
 
 func init() {
 	go wrk.run()
-}
+}*/

@@ -1,4 +1,4 @@
-package matrix
+package mat
 
 import "github.com/gonum/blas"
 
@@ -129,11 +129,6 @@ func (res Vec) Neg(v Vec) Vec {
 		res[i] = -v[i]
 	}
 	return res
-}
-
-func (res Vec) Mul(A, B Matrix) {
-	resMat := NewFromArray(res, false, len(res), 1)
-	resMat.Mul(A, B)
 }
 
 func (res Vec) AddMul(A *Dense, x Vec, a float64) {

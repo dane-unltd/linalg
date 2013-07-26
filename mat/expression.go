@@ -1,5 +1,6 @@
-package matrix
+package mat
 
+/*
 type Expr interface {
 	Size() (int, int)
 	eval(res Arith, w *worker)
@@ -52,14 +53,14 @@ func (e *mulExpr) eval(res Arith, w *worker) {
 	}
 }
 
-/*type divExpr struct {
+type divExpr struct {
 	m, n int
 	A, B Expr
 }
 
 func (e *divExpr) Size() (int, int) {
 	return e.m, e.n
-}*/
+}
 
 type addExpr struct {
 	m, n int
@@ -154,3 +155,4 @@ func (e *subExpr) eval(res Arith, w *worker) {
 		w.stackPos--
 	}
 }
+*/
