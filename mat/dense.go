@@ -10,25 +10,12 @@ type dense struct {
 	view       bool
 }
 
-func (D *dense) Size() (int, int) {
-	if D.IsTr() {
-		return D.cols, D.rows
-	}
-	return D.rows, D.cols
-}
-
-func (D *dense) Stride() int {
-	return D.stride
-}
-
-func (D *dense) IsTr() bool {
-	return D.trans == blas.Trans
-}
-
 type Dense struct {
 	dense
 	data []float64
 }
+
+//Constructors
 
 func NewDense(dims ...int) *Dense {
 	if len(dims) == 0 {
@@ -48,6 +35,13 @@ func NewDense(dims ...int) *Dense {
 
 	D.data = make([]float64, n*m)
 	return D
+}
+
+func Xes(x float64, dims ...int) {
+	D := NewDense(dims...)
+	for i := 0; i < len(D.data); i++ {
+		D.data[i] = x
+	}
 }
 
 func Eye(n int) *Dense {
@@ -106,35 +100,92 @@ func NewFromArray(data []float64, makeCopy bool, dims ...int) *Dense {
 	return D
 }
 
-func (D *Dense) Copy(A Matrix) {
-	m, n := A.Size()
-	if len(D.data) < m*n {
-		panic("not enough space for copy")
+//Basic Methods
+
+func realloc(data *[]float64, n int, cpy bool) {
+	if cap(*data) <= n {
+		*data = (*data)[0:n]
+		return
 	}
-	switch A := A.(type) {
-	case *Dense:
-		D.dense = A.dense
-		D.stride = A.rows
-		if A.stride == A.rows {
-			copy(D.data[:m*n], A.data)
+	d := make([]float64, n)
+	if cpy {
+		copy(d, *data)
+	}
+	*data = d
+}
+
+func zero(data []float64) {
+	for i := range data {
+		data[i] = 0
+	}
+}
+
+func (dst *Dense) recvDimCheck(m, n int) {
+	md, nd := dst.Dims()
+	if dst.view {
+		if m != md || n != nd {
+			panic("receiver dimension missmatch")
+		}
+	} else {
+		dst.rows = m
+		dst.cols = n
+		dst.stride = m
+		dst.trans = blas.NoTrans
+		if dst.data == nil {
+			dst.data = make([]float64, m*n)
 		} else {
-			for c := 0; c < A.cols; c++ {
-				copy(D.data[c*D.stride:(c+1)*D.stride], A.data[c*A.stride:])
+			realloc(&dst.data, m*n, false)
+		}
+	}
+}
+
+func (D *Dense) At(i, j int) float64 {
+	ix := D.dataIx(i, j)
+	return D.data[ix]
+}
+
+func (D *Dense) Set(i, j int, v float64) {
+	ix := D.dataIx(i, j)
+	D.data[ix] = v
+}
+
+func (D *dense) Dims() (int, int) {
+	if D.IsTr() {
+		return D.cols, D.rows
+	}
+	return D.rows, D.cols
+}
+
+func (D *dense) Stride() int {
+	return D.stride
+}
+
+func (D *dense) IsTr() bool {
+	return D.trans == blas.Trans
+}
+
+func (dst *Dense) Copy(A *Dense) {
+	m, n := A.Dims()
+
+	dst.recvDimCheck(m, n)
+
+	if A.trans != dst.trans {
+		for i := 0; i < m; i++ {
+			for j := 0; j < m; j++ {
+				dst.Set(i, j, A.At(i, j))
 			}
 		}
 		return
 	}
 
-	D.rows = m
-	D.stride = m
-	D.cols = n
-	D.trans = blas.NoTrans
-
-	for i := 0; i < m; i++ {
-		for j := 0; j < m; j++ {
-			D.Set(i, j, A.At(i, j))
+	if A.stride == m && dst.stride == m {
+		copy(dst.data, A.data)
+	} else {
+		for c := 0; c < A.cols; c++ {
+			copy(dst.data[c*dst.stride:(c+1)*dst.stride], A.data[c*A.stride:])
 		}
 	}
+
 }
 
 func (D *Dense) TrView() *Dense {
@@ -152,16 +203,6 @@ func (D *Dense) Equals(x interface{}) bool {
 	return D.VecView().Equals(D2.VecView())
 }
 
-func (D *Dense) At(i, j int) float64 {
-	ix := D.dataIx(i, j)
-	return D.data[ix]
-}
-
-func (D *Dense) Set(i, j int, v float64) {
-	ix := D.dataIx(i, j)
-	D.data[ix] = v
-}
-
 func (D *Dense) transp() *Dense {
 	if D.IsTr() {
 		D.trans = blas.NoTrans
@@ -174,14 +215,23 @@ func (D *Dense) transp() *Dense {
 }
 
 func (D *Dense) ColView(ix int) Vec {
+	if D.IsTr() {
+		panic("cannot get column view of transposed matrix")
+	}
 	return Vec(D.data[ix*D.stride : (ix*D.stride + D.rows)])
 }
 
 func (D *Dense) VecView() Vec {
+	if D.view {
+		panic("cannot get vectorized view of a view")
+	}
 	return Vec(D.data)
 }
 
 func (D *Dense) SetCol(ix int, v Vec) {
+	if D.IsTr() {
+		panic("column operation on transposed matrix not implemented")
+	}
 	if ix >= D.cols {
 		panic("index out of range")
 	}
@@ -203,14 +253,36 @@ func (D *Dense) AddCol(v Vec) {
 		panic("dimension missmatch")
 	}
 
-	if len(D.data) < D.cols*D.stride {
-		data := make([]float64, D.cols*D.stride)
-		copy(data, D.data)
-		copy(data[(D.cols-1)*D.stride:], v)
-		D.data = data
-	} else {
-		copy(D.data[(D.cols-1)*D.stride:], v)
+	realloc(&D.data, D.cols*D.stride, true)
+	copy(D.data[(D.cols-1)*D.stride:], v)
+}
+
+func (D *Dense) View(i, j, r, c int) *Dense {
+	m, n := D.Dims()
+	if i < 0 || j < 0 {
+		panic("negative index")
 	}
+	if i+r > m || j+c > n {
+		panic("submatrix out of bounds")
+	}
+	A := *D
+	A.view = true
+
+	if A.IsTr() {
+		A.rows = c
+		A.cols = r
+	} else {
+		A.rows = r
+		A.cols = c
+	}
+	ix := A.dataIx(i, j)
+	A.data = A.data[ix : ix+(A.cols-1)*A.stride+A.rows]
+	return &A
+}
+
+func (dst *Dense) SubMatrix(A *Dense, i, j, r, c int) {
+	V := A.View(i, j, r, c)
+	dst.Copy(V)
 }
 
 func (D *Dense) Array() []float64 {

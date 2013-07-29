@@ -16,7 +16,7 @@ func RandVec(n int) Vec {
 	return v
 }
 
-func (v Vec) Size() (int, int) {
+func (v Vec) Dims() (int, int) {
 	return len(v), 1
 }
 
@@ -41,7 +41,7 @@ func (v Vec) Equals(x interface{}) bool {
 		return ok
 	}
 
-	m, n := M.Size()
+	m, n := M.Dims()
 	if n > 1 || m != len(v) {
 		return false
 	}

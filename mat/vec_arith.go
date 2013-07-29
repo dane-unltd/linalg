@@ -45,7 +45,7 @@ func (res Vec) Max(v Vec, a float64) Vec {
 	return res
 }
 
-func (res Vec) MulH(a, b Vec) Vec {
+func (res Vec) Mul(a, b Vec) Vec {
 	if len(res) != len(a) || len(res) != len(b) {
 		panic("dimension missmatch")
 	}
@@ -55,7 +55,7 @@ func (res Vec) MulH(a, b Vec) Vec {
 	return res
 }
 
-func (res Vec) DivH(a, b Vec) Vec {
+func (res Vec) Div(a, b Vec) Vec {
 	if len(res) != len(a) || len(res) != len(b) {
 		panic("dimension missmatch")
 	}
@@ -132,7 +132,10 @@ func (res Vec) Neg(v Vec) Vec {
 }
 
 func (res Vec) AddMul(A *Dense, x Vec, a float64) {
-	m, n := A.Size()
+	m, n := A.Dims()
+	if len(res) != m || len(x) != n {
+		panic("dimension missmatch")
+	}
 	if A.trans == blas.Trans {
 		m, n = n, m
 	}
