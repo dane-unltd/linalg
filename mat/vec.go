@@ -34,19 +34,13 @@ func (dst Vec) Copy(src Vec) {
 	ops.Dcopy(len(dst), src, 1, dst, 1)
 }
 
-func (v Vec) Equals(x interface{}) bool {
-
-	M, ok := x.(Matrix)
-	if !ok {
-		return ok
-	}
-
-	m, n := M.Dims()
-	if n > 1 || m != len(v) {
+func (v Vec) Equals(a Vec) bool {
+	if len(a) != len(v) {
 		return false
 	}
+
 	for i := range v {
-		if v[i] != M.At(i, 0) {
+		if v[i] != a[i] {
 			return false
 		}
 	}

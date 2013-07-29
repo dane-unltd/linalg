@@ -1,18 +1,9 @@
 package linalg
 
 import (
-	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/mat"
-	"github.com/kortschak/cblas"
 	"testing"
 )
-
-var n = 3
-
-type cblasops struct {
-	cblas.Blas
-	clapack.Lapack
-}
 
 func TestMul(t *testing.T) {
 	mat.Register(cblasops{})

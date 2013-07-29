@@ -171,7 +171,7 @@ func (dst *Dense) Copy(A *Dense) {
 
 	if A.trans != dst.trans {
 		for i := 0; i < m; i++ {
-			for j := 0; j < m; j++ {
+			for j := 0; j < n; j++ {
 				dst.Set(i, j, A.At(i, j))
 			}
 		}
@@ -195,12 +195,34 @@ func (D *Dense) TrView() *Dense {
 	return &Dt
 }
 
-func (D *Dense) Equals(x interface{}) bool {
-	D2, ok := x.(*Dense)
-	if !ok {
-		return ok
+func (D *Dense) Equals(A *Dense) bool {
+	md, nd := D.Dims()
+	ma, na := A.Dims()
+	if ma != md || na != nd {
+		return false
 	}
-	return D.VecView().Equals(D2.VecView())
+
+	if A.trans != D.trans {
+		for i := 0; i < ma; i++ {
+			for j := 0; j < na; j++ {
+				if A.At(i, j) != D.At(i, j) {
+					return false
+				}
+			}
+		}
+		return true
+	}
+
+	if A.stride == ma && D.stride == md {
+		return Vec(A.data).Equals(Vec(D.data))
+	} else {
+		for c := 0; c < A.cols; c++ {
+			if !Vec(D.data[c*D.stride : c*D.stride+D.rows]).Equals(Vec(A.data[c*A.stride : c*A.stride+A.rows])) {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func (D *Dense) transp() *Dense {

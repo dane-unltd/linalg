@@ -22,7 +22,11 @@ func (dst *Dense) Add(A, B *Dense) {
 		}
 		return
 	}
-	dst.AddMM(A, B)
+	for i := 0; i < ma; i++ {
+		for j := 0; j < na; j++ {
+			dst.Set(i, j, A.At(i, j)+B.At(i, j))
+		}
+	}
 }
 
 func (dst *Dense) AddDiag(A *Dense, d Vec) {
@@ -38,15 +42,6 @@ func (dst *Dense) AddDiag(A *Dense, d Vec) {
 	dst.Copy(A)
 	for i := range d {
 		dst.Set(i, i, dst.At(i, i)+d[i])
-	}
-}
-
-func (dst *Dense) AddMM(A, B Matrix) {
-	m, n := A.Dims()
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			dst.Set(i, j, A.At(i, j)+B.At(i, j))
-		}
 	}
 }
 
@@ -68,13 +63,8 @@ func (dst *Dense) Sub(A, B *Dense) {
 		}
 		return
 	}
-	dst.SubMM(A, B)
-}
-
-func (dst *Dense) SubMM(A, B Matrix) {
-	m, n := A.Dims()
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
+	for i := 0; i < ma; i++ {
+		for j := 0; j < na; j++ {
 			dst.Set(i, j, A.At(i, j)-B.At(i, j))
 		}
 	}
@@ -165,20 +155,6 @@ func (dst *Dense) Mul(A, B *Dense) {
 	ops.Dgemm(blas.ColMajor, A.trans, B.trans, m, n, na,
 		1, A.data, A.stride, B.data, B.stride, 0,
 		dst.data, dst.stride)
-}
-
-//Slow general matrix multiplication
-func (dst *Dense) MulMM(A, B Matrix) {
-	_, K := A.Dims()
-	for i := 0; i < dst.rows; i++ {
-		for j := 0; j < dst.cols; j++ {
-			dst.data[dst.dataIx(i, j)] = 0
-			for k := 0; k < K; k++ {
-				dst.data[dst.dataIx(i, j)] += A.At(i, k) *
-					B.At(k, j)
-			}
-		}
-	}
 }
 
 func (dst *Dense) AddSc(a float64) {
