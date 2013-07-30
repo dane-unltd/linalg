@@ -142,3 +142,7 @@ func (res Vec) AddMul(A *Dense, x Vec, a float64) {
 	ops.Dgemv(blas.ColMajor, A.trans, m, n, a, A.data, A.stride, x, 1,
 		1, res, 1)
 }
+
+func (dst Vec) Apply(A LinOp, v Vec) {
+	A.ApplyTo(v, dst)
+}

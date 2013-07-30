@@ -17,7 +17,7 @@ type Dense struct {
 
 //Constructors
 
-func NewDense(dims ...int) *Dense {
+func New(dims ...int) *Dense {
 	if len(dims) == 0 {
 		return nil
 	}
@@ -38,14 +38,14 @@ func NewDense(dims ...int) *Dense {
 }
 
 func Xes(x float64, dims ...int) {
-	D := NewDense(dims...)
+	D := New(dims...)
 	for i := 0; i < len(D.data); i++ {
 		D.data[i] = x
 	}
 }
 
 func Eye(n int) *Dense {
-	D := NewDense(n)
+	D := New(n)
 	for i := 0; i < n; i++ {
 		D.Set(i, i, 1)
 	}
@@ -53,7 +53,7 @@ func Eye(n int) *Dense {
 }
 
 func Rand(dims ...int) *Dense {
-	D := NewDense(dims...)
+	D := New(dims...)
 	for i := range D.data {
 		D.data[i] = rand.Float64()
 	}
@@ -61,7 +61,7 @@ func Rand(dims ...int) *Dense {
 }
 
 func RandN(dims ...int) *Dense {
-	D := NewDense(dims...)
+	D := New(dims...)
 	for i := range D.data {
 		D.data[i] = rand.NormFloat64()
 	}
@@ -94,7 +94,7 @@ func NewFromArray(data []float64, makeCopy bool, dims ...int) *Dense {
 		D.trans = blas.NoTrans
 		D.data = data
 	} else {
-		D = NewDense(dims...)
+		D = New(dims...)
 		copy(D.data, data)
 	}
 	return D
@@ -234,6 +234,28 @@ func (D *Dense) transp() *Dense {
 	D.trans = blas.Trans
 
 	return D
+}
+
+func (D *Dense) Col(ix int, col Vec) Vec {
+	m, _ := D.Dims()
+	if col == nil && !D.IsTr() {
+		return D.ColView(ix)
+	}
+	if col == nil {
+		col = make(Vec, m)
+	}
+	if len(col) != m {
+		panic("provided vector has the wrong dimension")
+	}
+
+	if !D.IsTr() {
+		copy(col, D.data[ix*D.stride:(ix*D.stride+D.rows)])
+	} else {
+		for i := 0; i < m; i++ {
+			col[i] = D.At(i, ix)
+		}
+	}
+	return col
 }
 
 func (D *Dense) ColView(ix int) Vec {

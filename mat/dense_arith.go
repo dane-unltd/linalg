@@ -10,7 +10,7 @@ func (dst *Dense) Add(A, B *Dense) {
 
 	if ma != mb || na != nb {
 		fmt.Println(ma, na, mb, nb)
-		panic("operator dimension missmatch")
+		panic("operator dimension mismatch")
 	}
 
 	dst.recvDimCheck(ma, na)
@@ -36,7 +36,7 @@ func (dst *Dense) AddDiag(A *Dense, d Vec) {
 		n = ma
 	}
 	if len(d) != n {
-		panic("dimension missmatch")
+		panic("dimension mismatch")
 	}
 
 	dst.Copy(A)
@@ -51,7 +51,7 @@ func (dst *Dense) Sub(A, B *Dense) {
 
 	if ma != mb || na != nb {
 		fmt.Println(ma, na, mb, nb)
-		panic("operator dimension missmatch")
+		panic("operator dimension mismatch")
 	}
 
 	dst.recvDimCheck(ma, na)
@@ -73,7 +73,7 @@ func (dst *Dense) Sub(A, B *Dense) {
 func (dst *Dense) ScalCols(A *Dense, v Vec) {
 	m, n := A.Dims()
 	if len(v) != n {
-		panic("dimension missmatch")
+		panic("dimension mismatch")
 	}
 	dst.recvDimCheck(m, n)
 
@@ -92,15 +92,15 @@ func (dst *Dense) ScalCols(A *Dense, v Vec) {
 	}
 }
 
-func (dst Vec) Apply(A *Dense, v Vec) {
-	m, n := A.Dims()
-	if len(v) != n {
-		panic("dimension missmatch")
+func (D *Dense) ApplyTo(v, dst Vec) {
+	m, n := D.Dims()
+	if len(v) != n || len(dst) != m {
+		panic("dimension mismatch")
 	}
-	if A.IsTr() {
+	if D.IsTr() {
 		m, n = n, m
 	}
-	ops.Dgemv((blas.ColMajor), (A.trans), m, n, 1, A.data, A.stride, v, 1, 0, dst, 1)
+	ops.Dgemv((blas.ColMajor), (D.trans), m, n, 1, D.data, D.stride, v, 1, 0, dst, 1)
 }
 
 func (dst *Dense) MulElem(A, B *Dense) {
@@ -109,7 +109,7 @@ func (dst *Dense) MulElem(A, B *Dense) {
 
 	if ma != mb || na != nb {
 		fmt.Println(ma, na, mb, nb)
-		panic("operator dimension missmatch")
+		panic("operator dimension mismatch")
 	}
 
 	dst.recvDimCheck(ma, na)
@@ -136,7 +136,7 @@ func (dst *Dense) Mul(A, B *Dense) {
 
 	if na != mb {
 		fmt.Println(m, n, ma, na, mb, nb)
-		panic("dimension missmatch")
+		panic("dimension mismatch")
 	}
 
 	dst.recvDimCheck(m, n)
