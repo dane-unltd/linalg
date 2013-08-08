@@ -5,7 +5,7 @@ import (
 	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
 	"github.com/dane-unltd/linalg/mat"
-	"github.com/kortschak/cblas"
+	"github.com/gonum/blas/cblas"
 	"testing"
 )
 
