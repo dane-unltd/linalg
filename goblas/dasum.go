@@ -1,17 +1,7 @@
 package goblas
 
+import "github.com/ziutek/blas"
+
 func (Blas) Dasum(N int, X []float64, incX int) float64 {
-	var (
-		a  float64
-		xi int
-	)
-	for ; N > 0; N-- {
-		x := X[xi]
-		if x < 0 {
-			x = -x
-		}
-		a += x
-		xi += incX
-	}
-	return a
+	return blas.Dasum(N, X, incX)
 }

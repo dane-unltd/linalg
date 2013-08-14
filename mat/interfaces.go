@@ -1,7 +1,9 @@
 package mat
 
-type LinOp interface {
+type Operator interface {
 	ApplyTo(v, dst Vec)
+	ApplyInverseTo(v, dst Vec)
+	Dims() (int, int)
 }
 
 type Vectorer interface {

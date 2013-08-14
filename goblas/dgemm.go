@@ -1,6 +1,7 @@
 package goblas
 
 import "github.com/gonum/blas"
+import level1 "github.com/ziutek/blas"
 
 func (Blas) Dgemm(o blas.Order, tA, tB blas.Transpose, m int, n int, k int,
 	alpha float64, a []float64, lda int, b []float64, ldb int,
@@ -22,7 +23,7 @@ func (Blas) Dgemm(o blas.Order, tA, tB blas.Transpose, m int, n int, k int,
 	for j := 0; j < outer; j++ {
 		cj := c[j*ldc:]
 		if beta != 1 {
-			Blas{}.Dscal(veclen, beta, cj, 1)
+			level1.Dscal(veclen, beta, cj, 1)
 		}
 
 		for l := 0; l < inner; l++ {
@@ -35,10 +36,15 @@ func (Blas) Dgemm(o blas.Order, tA, tB blas.Transpose, m int, n int, k int,
 				blj = b[l*ldb+j]
 			}
 			if tA == blas.NoTrans {
-				Blas{}.Daxpy(veclen, blj*alpha, al, 1, cj, 1)
+				level1.Daxpy(veclen, blj*alpha, al, 1, cj, 1)
 			} else {
-				Blas{}.Daxpy(veclen, blj*alpha, al, lda, cj, 1)
+				level1.Daxpy(veclen, blj*alpha, al, lda, cj, 1)
 			}
 		}
 	}
+}
+
+func (Blas) Dgemm(o blas.Order, tA, tB blas.Transpose, m int, n int, k int,
+	alpha float64, a []float64, lda int, b []float64, ldb int,
+	beta float64, c []float64, ldc int) {
 }

@@ -103,6 +103,10 @@ func (D *Dense) ApplyTo(v, dst Vec) {
 	ops.Dgemv((blas.ColMajor), (D.trans), m, n, 1, D.data, D.stride, v, 1, 0, dst, 1)
 }
 
+func (D *Dense) ApplyInverseTo(v, dst Vec) {
+	panic("not implemented")
+}
+
 func (dst *Dense) MulElem(A, B *Dense) {
 	ma, na := A.Dims()
 	mb, nb := B.Dims()

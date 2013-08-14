@@ -143,6 +143,6 @@ func (res Vec) AddMul(A *Dense, x Vec, a float64) {
 		1, res, 1)
 }
 
-func (dst Vec) Apply(A LinOp, v Vec) {
+func (dst Vec) Transform(A Operator, v Vec) {
 	A.ApplyTo(v, dst)
 }

@@ -1,14 +1,7 @@
 package goblas
 
+import "github.com/ziutek/blas"
+
 func (Blas) Dcopy(N int, X []float64, incX int, Y []float64, incY int) {
-	if incX == 1 && incY == 1 {
-		copy(Y[:N], X[:N])
-		return
-	}
-	var xi, yi int
-	for ; N > 0; N-- {
-		Y[yi] = X[xi]
-		xi += incX
-		yi += incY
-	}
+	blas.Dcopy(N, X, incX, Y, incY)
 }

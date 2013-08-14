@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var n = 3
+var n = 9
 
 type cblasops struct {
 	cblas.Blas
