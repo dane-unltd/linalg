@@ -1,6 +1,7 @@
 package mat
 
 import "github.com/dane-unltd/linalg/lapack"
+import "github.com/gonum/blas"
 
 func (D *Dense) Svd(S Vec, U, Vt *Dense, full bool) lapack.Info {
 	if U.IsTr() || Vt.IsTr() {
@@ -33,7 +34,8 @@ func (D *Dense) Svd(S Vec, U, Vt *Dense, full bool) lapack.Info {
 	}
 
 	Dcp := make([]float64, D.stride*n)
+	superb := make([]float64, nSV)
 	copy(Dcp, D.data)
-	return ops.Dgesvd(jobu, jobvt, m, n, Dcp, D.stride, S,
-		U.data, U.stride, Vt.data, Vt.stride)
+	return ops.Dgesvd(blas.ColMajor, jobu, jobvt, m, n, Dcp, D.stride, S,
+		U.data, U.stride, Vt.data, Vt.stride, superb)
 }

@@ -2,8 +2,8 @@ package linalg
 
 import (
 	"github.com/dane-unltd/engine/math3"
-	"github.com/dane-unltd/linalg/clapack"
 	"github.com/dane-unltd/linalg/goblas"
+	"github.com/dane-unltd/linalg/lapack/lapacke"
 	"github.com/dane-unltd/linalg/mat"
 	"github.com/gonum/blas/cblas"
 	"testing"
@@ -13,12 +13,12 @@ var n = 9
 
 type cblasops struct {
 	cblas.Blas
-	clapack.Lapack
+	lapacke.Lapack
 }
 
 type goblasops struct {
 	goblas.Blas
-	clapack.Lapack
+	lapacke.Lapack
 }
 
 func Benchmark_MatrixMulMath3(b *testing.B) {

@@ -1,6 +1,7 @@
 package mat
 
 import "github.com/dane-unltd/linalg/lapack"
+import "github.com/gonum/blas"
 
 func (D *Dense) Chol(R *Dense) lapack.Info {
 	m, n := D.Dims()
@@ -11,6 +12,8 @@ func (D *Dense) Chol(R *Dense) lapack.Info {
 	if R.IsTr() {
 		panic("cannot store factorization into transposed view")
 	}
-	ops.Dlacpy('U', m, n, D.data, D.stride, R.data, R.stride)
-	return ops.Dpotrf('U', m, R.data, R.stride)
+	for i := 0; i < n; i++ {
+		copy(R.data[i*R.stride:i*R.stride+i+1], D.data[i*D.stride:])
+	}
+	return ops.Dpotrf(blas.ColMajor, blas.Upper, m, R.data, R.stride)
 }
