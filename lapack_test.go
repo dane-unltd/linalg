@@ -16,6 +16,7 @@ func TestSvd(t *testing.T) {
 
 	A2 := mat.New(2, 2)
 	A3 := mat.New(2, 2)
+	t.Log(U, S)
 	A2.ScalCols(U, S)
 	A3.Mul(A2, Vt)
 
