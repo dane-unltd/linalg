@@ -9,7 +9,7 @@ package clapack
 // #cgo linux LDFLAGS: -lblas -llapack
 // #cgo darwin LDFLAGS: -DYA_BLAS -DYA_LAPACK -DYA_BLASMULT -framework vecLib
 // #include <stdlib.h>
-// #include "lapack.h"
+// #include "lapacke.h"
 import "C"
 import (
 	"github.com/dane-unltd/linalg/lapack"
