@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var n = 500
+var n = 3
 
 type cblasops struct {
 	cblas.Blas
@@ -21,7 +21,7 @@ type goblasops struct {
 	lapacke.Lapack
 }
 
-func Benchmark_MatrixMulMath3(b *testing.B) {
+func Benchmark_MatrixMMulMath3(b *testing.B) {
 	b.StopTimer()
 	A := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	B := math3.Mat{1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -39,7 +39,7 @@ func Benchmark_MatrixMulMath3(b *testing.B) {
 	}
 }
 
-func Benchmark_MatrixMulCblas(b *testing.B) {
+func Benchmark_MatrixMMulCblas(b *testing.B) {
 	mat.Register(cblasops{})
 	b.StopTimer()
 	A := mat.RandN(n, n)
@@ -51,14 +51,14 @@ func Benchmark_MatrixMulCblas(b *testing.B) {
 	res2 := mat.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		res1.Mul(A, B)
-		res2.Mul(res1, C)
-		res1.Mul(res2, D)
-		res2.Mul(res1, E)
+		res1.MMul(A, B)
+		res2.MMul(res1, C)
+		res1.MMul(res2, D)
+		res2.MMul(res1, E)
 	}
 }
 
-func Benchmark_MatrixMulGo(b *testing.B) {
+func Benchmark_MatrixMMulGo(b *testing.B) {
 	mat.Register(goblasops{})
 	b.StopTimer()
 	A := mat.RandN(n, n)
@@ -70,17 +70,17 @@ func Benchmark_MatrixMulGo(b *testing.B) {
 	res2 := mat.RandN(n, n)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		res1.Mul(A, B)
-		res2.Mul(res1, C)
-		res1.Mul(res2, D)
-		res2.Mul(res1, E)
+		res1.MMul(A, B)
+		res2.MMul(res1, C)
+		res1.MMul(res2, D)
+		res2.MMul(res1, E)
 	}
 }
 
 func Benchmark_Nrm2Cblas(b *testing.B) {
 	mat.Register(cblasops{})
 	A := mat.RandN(n, n)
-	v := A.VecView()
+	v := A.Vec(nil)
 
 	for i := 0; i < b.N; i++ {
 		v.Nrm2()
@@ -90,7 +90,7 @@ func Benchmark_Nrm2Cblas(b *testing.B) {
 func Benchmark_Nrm2Go(b *testing.B) {
 	mat.Register(goblasops{})
 	A := mat.RandN(n, n)
-	v := A.VecView()
+	v := A.Vec(nil)
 
 	for i := 0; i < b.N; i++ {
 		v.Nrm2()
@@ -100,7 +100,7 @@ func Benchmark_Nrm2Go(b *testing.B) {
 func Benchmark_DdotCblas(b *testing.B) {
 	mat.Register(cblasops{})
 	A := mat.RandN(n, n)
-	v := A.VecView()
+	v := A.Vec(nil)
 
 	for i := 0; i < b.N; i++ {
 		mat.Dot(v, v)
@@ -110,7 +110,7 @@ func Benchmark_DdotCblas(b *testing.B) {
 func Benchmark_DdotGo(b *testing.B) {
 	mat.Register(goblasops{})
 	A := mat.RandN(n, n)
-	v := A.VecView()
+	v := A.Vec(nil)
 
 	for i := 0; i < b.N; i++ {
 		mat.Dot(v, v)

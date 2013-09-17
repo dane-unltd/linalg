@@ -9,11 +9,9 @@ func (D *Dense) Chol(R *Dense) lapack.Info {
 		panic("need square matrix for chol")
 	}
 	R.recvDimCheck(m, n)
-	if R.IsTr() {
-		panic("cannot store factorization into transposed view")
-	}
+
 	for i := 0; i < n; i++ {
-		copy(R.data[i*R.stride:i*R.stride+i+1], D.data[i*D.stride:])
+		copy(R.data[i*R.rows:i*R.rows+i+1], D.data[i*D.rows:])
 	}
-	return ops.Dpotrf(blas.ColMajor, blas.Upper, m, R.data, R.stride)
+	return ops.Dpotrf(blas.ColMajor, blas.Upper, m, R.data, R.rows)
 }

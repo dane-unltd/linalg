@@ -27,11 +27,12 @@ func (v Vec) At(i, j int) float64 {
 	return v[i]
 }
 
-func (dst Vec) Copy(src Vec) {
+func (dst Vec) Copy(src Vec) Vec {
 	if len(dst) != len(src) {
 		panic("dimension missmatch")
 	}
 	ops.Dcopy(len(dst), src, 1, dst, 1)
+	return dst
 }
 
 func (v Vec) Equals(a Vec) bool {
@@ -45,4 +46,13 @@ func (v Vec) Equals(a Vec) bool {
 		}
 	}
 	return true
+}
+
+func (v Vec) Col(ix int, c Vec) Vec {
+	if c == nil {
+		return v
+	}
+
+	c.Copy(v)
+	return c
 }

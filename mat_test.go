@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestMul(t *testing.T) {
+func TestMMul(t *testing.T) {
 	mat.Register(cblasops{})
 	A := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
 	B := mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
@@ -14,11 +14,11 @@ func TestMul(t *testing.T) {
 
 	resCorrect := mat.NewFromArray([]float64{7, 10, 15, 22}, false, 2, 2)
 
-	res.Mul(A, B)
+	res.MMul(A, B)
 
 	temp := mat.Dense{}
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 
@@ -27,19 +27,19 @@ func TestMul(t *testing.T) {
 	Asub := A.View(0, 0, 2, 1)
 	Bsub := B.View(0, 1, 2, 1).TrView()
 
-	res.Mul(Asub, Bsub)
+	res.MMul(Asub, Bsub)
 
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 
 	Bsub = B.TrView().View(1, 0, 1, 2)
 
-	res.Mul(Asub, Bsub)
+	res.MMul(Asub, Bsub)
 
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 
@@ -49,24 +49,13 @@ func TestMul(t *testing.T) {
 
 	resCorrect = mat.NewFromArray([]float64{7, 10, 3, 4}, false, 2, 2)
 
-	dst.Mul(B, Asub)
+	dst.MMul(B, Asub)
 
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 
-	res = mat.NewFromArray([]float64{1, 2, 3, 4}, false, 2, 2)
-	dst = res.TrView().View(0, 0, 2, 1)
-
-	resCorrect = mat.NewFromArray([]float64{7, 2, 10, 4}, false, 2, 2)
-
-	dst.Mul(B, Asub)
-
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
-		t.Error("wrong result", res, resCorrect)
-	}
 }
 
 func TestAdd(t *testing.T) {
@@ -78,11 +67,11 @@ func TestAdd(t *testing.T) {
 
 	resCorrect := mat.NewFromArray([]float64{2, 4, 6, 8}, false, 2, 2)
 
-	res.Add(A, B)
+	res.Copy(A).Add(B)
 
 	temp := mat.Dense{}
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 
@@ -91,19 +80,19 @@ func TestAdd(t *testing.T) {
 	Asub := A.View(0, 0, 2, 1)
 	Bsub := B.View(0, 0, 1, 2).TrView()
 
-	res.Add(Asub, Bsub)
+	res.Copy(Asub).Add(Bsub)
 
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 
 	Bsub = B.TrView().View(0, 0, 2, 1)
 
-	res.Add(Asub, Bsub)
+	res.Copy(Asub).Add(Bsub)
 
-	temp.Sub(res, resCorrect)
-	if temp.VecView().Nrm2Sq() > 0.01 {
+	temp.Copy(res).Sub(resCorrect)
+	if temp.Vec(nil).Nrm2Sq() > 0.01 {
 		t.Error("wrong result", res, resCorrect)
 	}
 

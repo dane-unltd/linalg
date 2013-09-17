@@ -4,14 +4,6 @@ import "github.com/dane-unltd/linalg/lapack"
 import "github.com/gonum/blas"
 
 func (D *Dense) Svd(S Vec, U, Vt *Dense, full bool) lapack.Info {
-	if U.IsTr() || Vt.IsTr() {
-		panic("cannot store factorization into transposed view")
-	}
-
-	if D.IsTr() {
-		panic("factorizing transposed view of a matrix will lead to undesired results")
-	}
-
 	m, n := D.Dims()
 
 	nSV := m
@@ -33,9 +25,9 @@ func (D *Dense) Svd(S Vec, U, Vt *Dense, full bool) lapack.Info {
 		Vt.recvDimCheck(nSV, n)
 	}
 
-	Dcp := make([]float64, D.stride*n)
+	Dcp := make([]float64, D.rows*n)
 	superb := make([]float64, nSV)
 	copy(Dcp, D.data)
-	return ops.Dgesvd(blas.ColMajor, jobu, jobvt, m, n, Dcp, D.stride, S,
-		U.data, U.stride, Vt.data, Vt.stride, superb)
+	return ops.Dgesvd(blas.ColMajor, jobu, jobvt, m, n, Dcp, D.rows, S,
+		U.data, U.rows, Vt.data, Vt.rows, superb)
 }

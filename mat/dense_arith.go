@@ -1,36 +1,38 @@
 package mat
 
-import "fmt"
-
 import "github.com/gonum/blas"
 
-func (dst *Dense) Add(A, B *Dense) {
+func (dst *Dense) Add(A Matrix) *Dense {
 	ma, na := A.Dims()
-	mb, nb := B.Dims()
+	md, nd := dst.Dims()
 
-	if ma != mb || na != nb {
-		fmt.Println(ma, na, mb, nb)
+	if ma != md || na != nd {
 		panic("operator dimension mismatch")
 	}
 
-	dst.recvDimCheck(ma, na)
-
-	if (!A.IsTr() && !B.IsTr() && !dst.IsTr()) ||
-		(A.IsTr() && B.IsTr() && dst.IsTr()) {
-		for c := 0; c < na; c++ {
-			dst.ColView(c).Add(A.ColView(c), B.ColView(c))
-		}
-		return
-	}
-	for i := 0; i < ma; i++ {
-		for j := 0; j < na; j++ {
-			dst.Set(i, j, A.At(i, j)+B.At(i, j))
+	switch A := A.(type) {
+	case *Dense:
+		dst.Vec(nil).Add(A.Vec(nil))
+		return dst
+	case *denseView:
+		if !A.IsTr() {
+			for c := 0; c < na; c++ {
+				dst.Col(c, nil).Add(A.Col(c, nil))
+			}
+			return dst
 		}
 	}
+	for j := 0; j < na; j++ {
+		offset := j * dst.rows
+		for i := 0; i < ma; i++ {
+			dst.data[offset+i] += A.At(i, j)
+		}
+	}
+	return dst
 }
 
-func (dst *Dense) AddDiag(A *Dense, d Vec) {
-	ma, na := A.Dims()
+func (dst *Dense) AddDiag(d Vec) {
+	ma, na := dst.Dims()
 	n := na
 	if ma < n {
 		n = ma
@@ -39,132 +41,154 @@ func (dst *Dense) AddDiag(A *Dense, d Vec) {
 		panic("dimension mismatch")
 	}
 
-	dst.Copy(A)
-	for i := range d {
-		dst.Set(i, i, dst.At(i, i)+d[i])
+	for i, v := range d {
+		dst.data[i*dst.rows+i] += v
 	}
 }
 
-func (dst *Dense) Sub(A, B *Dense) {
+func (dst *Dense) Sub(A Matrix) *Dense {
 	ma, na := A.Dims()
-	mb, nb := B.Dims()
+	md, nd := dst.Dims()
 
-	if ma != mb || na != nb {
-		fmt.Println(ma, na, mb, nb)
+	if ma != md || na != nd {
 		panic("operator dimension mismatch")
 	}
 
-	dst.recvDimCheck(ma, na)
-
-	if (!A.IsTr() && !B.IsTr() && !dst.IsTr()) ||
-		(A.IsTr() && B.IsTr() && dst.IsTr()) {
-		for c := 0; c < na; c++ {
-			dst.ColView(c).Sub(A.ColView(c), B.ColView(c))
-		}
-		return
-	}
-	for i := 0; i < ma; i++ {
-		for j := 0; j < na; j++ {
-			dst.Set(i, j, A.At(i, j)-B.At(i, j))
+	switch A := A.(type) {
+	case *Dense:
+		dst.Vec(nil).Sub(A.Vec(nil))
+		return dst
+	case *denseView:
+		if !A.IsTr() {
+			for c := 0; c < na; c++ {
+				dst.Col(c, nil).Sub(A.Col(c, nil))
+			}
+			return dst
 		}
 	}
+	for j := 0; j < na; j++ {
+		offset := j * dst.rows
+		for i := 0; i < ma; i++ {
+			dst.data[offset+i] -= A.At(i, j)
+		}
+	}
+	return dst
 }
 
-func (dst *Dense) ScalCols(A *Dense, v Vec) {
-	m, n := A.Dims()
+func (dst *Dense) ScalCols(v Vec) {
+	m, n := dst.Dims()
 	if len(v) != n {
 		panic("dimension mismatch")
 	}
-	dst.recvDimCheck(m, n)
-
-	if dst.IsTr() || A.IsTr() {
-		for i := 0; i < m; i++ {
-			for j := 0; j < n; j++ {
-				dst.Set(i, j, A.At(i, j)*v[j])
-			}
-		}
-		return
-	}
 
 	for i := 0; i < n; i++ {
-		ops.Dcopy(m, A.ColView(i), 1, dst.ColView(i), 1)
-		ops.Dscal(m, v[i], dst.ColView(i), 1)
+		ops.Dscal(m, v[i], dst.Col(i, nil), 1)
 	}
 }
 
-func (D *Dense) ApplyTo(v, dst Vec) {
-	m, n := D.Dims()
-	if len(v) != n || len(dst) != m {
-		panic("dimension mismatch")
-	}
-	if D.IsTr() {
-		m, n = n, m
-	}
-	ops.Dgemv((blas.ColMajor), (D.trans), m, n, 1, D.data, D.stride, v, 1, 0, dst, 1)
-}
-
-func (D *Dense) ApplyInverseTo(v, dst Vec) {
-	panic("not implemented")
-}
-
-func (dst *Dense) MulElem(A, B *Dense) {
+func (dst *Dense) Mul(A Matrix) *Dense {
 	ma, na := A.Dims()
-	mb, nb := B.Dims()
+	md, nd := dst.Dims()
 
-	if ma != mb || na != nb {
-		fmt.Println(ma, na, mb, nb)
+	if ma != md || na != nd {
 		panic("operator dimension mismatch")
 	}
 
-	dst.recvDimCheck(ma, na)
-
-	if (!A.IsTr() && !B.IsTr() && !dst.IsTr()) ||
-		(A.IsTr() && B.IsTr() && dst.IsTr()) {
-		for c := 0; c < na; c++ {
-			dst.ColView(c).Mul(A.ColView(c), B.ColView(c))
-		}
-		return
-	}
-
-	for i := 0; i < ma; i++ {
-		for j := 0; j < na; j++ {
-			dst.Set(i, j, A.At(i, j)*B.At(i, j))
+	switch A := A.(type) {
+	case *Dense:
+		dst.Vec(nil).Mul(A.Vec(nil))
+		return dst
+	case *denseView:
+		if !A.IsTr() {
+			for c := 0; c < na; c++ {
+				dst.Col(c, nil).Mul(A.Col(c, nil))
+			}
+			return dst
 		}
 	}
+	for j := 0; j < na; j++ {
+		offset := j * dst.rows
+		for i := 0; i < ma; i++ {
+			dst.data[offset+i] *= A.At(i, j)
+		}
+	}
+	return dst
 }
 
-func (dst *Dense) Mul(A, B *Dense) {
+func (dst *Dense) Div(A Matrix) *Dense {
+	ma, na := A.Dims()
+	md, nd := dst.Dims()
+
+	if ma != md || na != nd {
+		panic("operator dimension mismatch")
+	}
+
+	switch A := A.(type) {
+	case *Dense:
+		dst.Vec(nil).Div(A.Vec(nil))
+		return dst
+	case *denseView:
+		if !A.IsTr() {
+			for c := 0; c < na; c++ {
+				dst.Col(c, nil).Div(A.Col(c, nil))
+			}
+			return dst
+		}
+	}
+	for j := 0; j < na; j++ {
+		offset := j * dst.rows
+		for i := 0; i < ma; i++ {
+			dst.data[offset+i] /= A.At(i, j)
+		}
+	}
+	return dst
+}
+
+func (dst *Dense) MMul(A, B Matrix) {
 	ma, na := A.Dims()
 	mb, nb := B.Dims()
 	m, n := ma, nb
 
 	if na != mb {
-		fmt.Println(m, n, ma, na, mb, nb)
 		panic("dimension mismatch")
 	}
 
 	dst.recvDimCheck(m, n)
 
-	if dst.IsTr() {
-		A.transp()
-		B.transp()
-		ops.Dgemm(blas.ColMajor, B.trans, A.trans, n, m, na,
-			1, B.data, B.stride, A.data, A.stride, 0,
-			dst.data, dst.stride)
-		A.transp()
-		B.transp()
-		return
+	switch A := A.(type) {
+	case *Dense:
+		switch B := B.(type) {
+		case *Dense:
+			ops.Dgemm(blas.ColMajor, blas.NoTrans, blas.NoTrans, m, n, na,
+				1, A.data, ma, B.data, mb, 0,
+				dst.data, m)
+			return
+		case *denseView:
+			ops.Dgemm(blas.ColMajor, blas.NoTrans, B.trans, m, n, na,
+				1, A.data, ma, B.data, B.stride, 0,
+				dst.data, m)
+			return
+		}
+	case *denseView:
+		switch B := B.(type) {
+		case *Dense:
+			ops.Dgemm(blas.ColMajor, A.trans, blas.NoTrans, m, n, na,
+				1, A.data, A.stride, B.data, mb, 0,
+				dst.data, m)
+			return
+		case *denseView:
+			ops.Dgemm(blas.ColMajor, A.trans, B.trans, m, n, na,
+				1, A.data, A.stride, B.data, B.stride, 0,
+				dst.data, m)
+			return
+		}
+
 	}
 
-	ops.Dgemm(blas.ColMajor, A.trans, B.trans, m, n, na,
-		1, A.data, A.stride, B.data, B.stride, 0,
-		dst.data, dst.stride)
+	panic("general mmul not implemented")
+
 }
 
 func (dst *Dense) AddSc(a float64) {
-	for j := 0; j < dst.cols; j++ {
-		for i := 0; i < dst.rows; i++ {
-			dst.data[j*dst.stride+i] += a
-		}
-	}
+	dst.Vec(nil).AddSc(a)
 }

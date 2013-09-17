@@ -45,22 +45,22 @@ func (res Vec) Max(v Vec, a float64) Vec {
 	return res
 }
 
-func (res Vec) Mul(a, b Vec) Vec {
-	if len(res) != len(a) || len(res) != len(b) {
+func (res Vec) Mul(a Vec) Vec {
+	if len(res) != len(a) {
 		panic("dimension missmatch")
 	}
-	for i := range res {
-		res[i] = a[i] * b[i]
+	for i, v := range a {
+		res[i] *= v
 	}
 	return res
 }
 
-func (res Vec) Div(a, b Vec) Vec {
-	if len(res) != len(a) || len(res) != len(b) {
+func (res Vec) Div(a Vec) Vec {
+	if len(res) != len(a) {
 		panic("dimension missmatch")
 	}
-	for i := range res {
-		res[i] = a[i] / b[i]
+	for i, v := range a {
+		res[i] /= v
 	}
 	return res
 }
@@ -89,24 +89,24 @@ func Dot(a, b Vec) float64 {
 	return ops.Ddot(len(a), a, 1, b, 1)
 }
 
-func (res Vec) Add(a, b Vec) Vec {
-	if len(res) != len(a) || len(res) != len(b) {
+func (res Vec) Add(a Vec) Vec {
+	if len(res) != len(a) {
 		panic("dimension missmatch")
 	}
 
-	for i := range res {
-		res[i] = a[i] + b[i]
+	for i, v := range a {
+		res[i] += v
 	}
 	return res
 }
 
-func (res Vec) Sub(a, b Vec) Vec {
-	if len(res) != len(a) || len(res) != len(b) {
+func (res Vec) Sub(a Vec) Vec {
+	if len(res) != len(a) {
 		panic("dimension missmatch")
 	}
 
-	for i := range res {
-		res[i] = a[i] - b[i]
+	for i, v := range a {
+		res[i] -= v
 	}
 	return res
 }
@@ -121,28 +121,76 @@ func (res Vec) Cross(a, b Vec) Vec {
 	return res
 }
 
-func (res Vec) Neg(v Vec) Vec {
-	if len(res) != len(v) {
-		panic("dimension missmatch")
-	}
-	for i := range res {
-		res[i] = -v[i]
+func (res Vec) Neg() Vec {
+	for i, v := range res {
+		res[i] = -v
 	}
 	return res
 }
 
-func (res Vec) AddMul(A *Dense, x Vec, a float64) {
+func (res Vec) AddMul(A Matrix, x Vec, a float64) {
 	m, n := A.Dims()
 	if len(res) != m || len(x) != n {
 		panic("dimension missmatch")
 	}
-	if A.trans == blas.Trans {
-		m, n = n, m
+
+	switch A := A.(type) {
+	case *Dense:
+		ops.Dgemv(blas.ColMajor, blas.NoTrans, m, n, a, A.data, A.rows, x, 1,
+			1, res, 1)
+		return
+	case *denseView:
+		if A.trans == blas.Trans {
+			m, n = n, m
+		}
+		ops.Dgemv(blas.ColMajor, A.trans, m, n, a, A.data, A.stride, x, 1,
+			1, res, 1)
+		return
 	}
-	ops.Dgemv(blas.ColMajor, A.trans, m, n, a, A.data, A.stride, x, 1,
-		1, res, 1)
+	panic("general mv not implemented")
 }
 
-func (dst Vec) Transform(A Operator, v Vec) {
-	A.ApplyTo(v, dst)
+func (dst Vec) MMul(A, v Matrix) Vec {
+	m, n := A.Dims()
+	mv, nv := v.Dims()
+	if mv != n || len(dst) != m {
+		panic("dimension mismatch")
+	}
+	if nv != 1 {
+		panic("right hand side has to be a vector")
+	}
+
+	if v, ok := v.(Coler); ok {
+		vc := v.Col(1, nil)
+		switch A := A.(type) {
+		case *Dense:
+			ops.Dgemv((blas.ColMajor), (blas.NoTrans), m, n, 1,
+				A.data, m, vc, 1, 0, dst, 1)
+			return dst
+		case *denseView:
+			if A.IsTr() {
+				m, n = n, m
+			}
+			ops.Dgemv((blas.ColMajor), A.trans, m, n, 1,
+				A.data, m, vc, 1, 0, dst, 1)
+			return dst
+		}
+		for row := 0; row < m; row++ {
+			sum := 0.0
+			for col := 0; col < n; col++ {
+				sum += A.At(row, col) * vc[col]
+			}
+			dst[row] = sum
+		}
+		return dst
+	}
+
+	for row := 0; row < m; row++ {
+		sum := 0.0
+		for col := 0; col < n; col++ {
+			sum += A.At(row, col) * v.At(col, 1)
+		}
+		dst[row] = sum
+	}
+	return dst
 }

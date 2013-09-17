@@ -9,3 +9,11 @@ type Operator interface {
 type Vectorer interface {
 	Col(ix int, col Vec) Vec
 }
+
+type Viewer interface {
+	View(i, j, r, c int) *denseView
+}
+
+type Coler interface {
+	Col(ix int, c Vec) Vec
+}
