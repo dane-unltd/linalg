@@ -4,10 +4,8 @@ import (
 	"github.com/dane-unltd/linalg/lapacke"
 	"github.com/gonum/blas/cblas"
 	"github.com/gonum/matrix/mat64"
-	"github.com/gonum/matrix/mat64/la"
 	check "launchpad.net/gocheck"
 	"math"
-	"math/rand"
 	"testing"
 )
 
@@ -38,7 +36,6 @@ func (s *S) SetUpSuite(c *check.C) { mat64.Register(cblas.Blas{}) }
 
 var _ = check.Suite(&S{})
 
-/*
 func (s *S) TestSVD(c *check.C) {
 	for _, t := range []struct {
 		a *mat64.Dense
@@ -192,85 +189,11 @@ func (s *S) TestCholesky(c *check.C) {
 		lc := mat64.DenseCopyOf(cf.L)
 
 		lc.Mul(lc, lt)
-		c.Check(lc.EqualsApprox(t.a, 1e-12), check.Equals, true)
+		c.Check(lc.EqualsApprox(t.a, 1e-4), check.Equals, true)
 
 		x := cf.Solve(eye())
 
 		t.a.Mul(t.a, x)
-		c.Check(t.a.EqualsApprox(eye(), 1e-12), check.Equals, true)
-	}
-}*/
-
-func BenchmarkCholeskyLa(b *testing.B) {
-	n := 20
-	for iter := 0; iter < b.N; iter++ {
-		b.StopTimer()
-		a, _ := mat64.NewDense(n, n, make([]float64, n*n))
-		for i := 0; i < n; i++ {
-			for j := i; j < n; j++ {
-				v := rand.NormFloat64()
-				a.Set(i, j, v)
-				a.Set(j, i, v)
-			}
-		}
-		b.StartTimer()
-
-		_ = la.Cholesky(a)
-	}
-}
-
-func BenchmarkCholeskyLAPACKE(b *testing.B) {
-	n := 20
-	for iter := 0; iter < b.N; iter++ {
-		b.StopTimer()
-		a, _ := mat64.NewDense(n, n, make([]float64, n*n))
-		for i := 0; i < n; i++ {
-			for j := i; j < n; j++ {
-				v := rand.NormFloat64()
-				a.Set(i, j, v)
-				a.Set(j, i, v)
-			}
-		}
-		b.StartTimer()
-
-		_ = lapacke.Cholesky(a)
-	}
-}
-
-func BenchmarkSVDLa(b *testing.B) {
-	n := 100
-	epsilon := math.Pow(2, -52.0)
-	small := math.Pow(2, -966.0)
-
-	for iter := 0; iter < b.N; iter++ {
-		b.StopTimer()
-		a, _ := mat64.NewDense(n, n, make([]float64, n*n))
-		for i := 0; i < n; i++ {
-			for j := 0; j < n; j++ {
-				v := rand.NormFloat64()
-				a.Set(i, j, v)
-			}
-		}
-		b.StartTimer()
-
-		_ = la.SVD(a, epsilon, small, true, true)
-	}
-}
-
-func BenchmarkSVDLAPACKE(b *testing.B) {
-	n := 100
-
-	for iter := 0; iter < b.N; iter++ {
-		b.StopTimer()
-		a, _ := mat64.NewDense(n, n, make([]float64, n*n))
-		for i := 0; i < n; i++ {
-			for j := 0; j < n; j++ {
-				v := rand.NormFloat64()
-				a.Set(i, j, v)
-			}
-		}
-		b.StartTimer()
-
-		_ = lapacke.SVD(a, 0, 0, true, true)
+		c.Check(t.a.EqualsApprox(eye(), 1e-4), check.Equals, true)
 	}
 }
