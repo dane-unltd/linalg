@@ -2,7 +2,6 @@ package mat
 
 import (
 	//	"fmt"
-	"github.com/dane-unltd/linalg/lapack"
 	"github.com/gonum/blas"
 	"sync"
 )
@@ -12,7 +11,6 @@ var mut sync.Mutex
 
 type matops interface {
 	blas.Float64
-	lapack.Float64
 }
 
 func Register(o matops) {

@@ -12,20 +12,29 @@ package lapacke
 // #include "lapacke.h"
 import "C"
 import (
-	"github.com/dane-unltd/linalg/lapack"
-	"github.com/gonum/blas"
+	"github.com/gonum/matrix/mat64"
+	"github.com/gonum/matrix/mat64/la"
 	"unsafe"
 )
 
 //import "fmt"
 
-type Lapack struct{}
+func Cholesky(a *mat64.Dense) la.CholeskyFactor {
+	// Initialize.
+	l := mat64.DenseCopyOf(a)
+	L := l.BlasMatrix()
+	spd := L.Rows == L.Cols
+	if !spd {
+		return la.CholeskyFactor{L: l, SPD: spd}
+	}
 
-var (
-	_ lapack.Float64 = Lapack{}
-)
+	info := C.LAPACKE_dpotrf(C.int(L.Order), 'L', C.int(L.Rows),
+		(*C.double)(unsafe.Pointer(&L.Data[0])), C.int(L.Stride))
+	spd = info == 0
+	return la.CholeskyFactor{L: l, SPD: spd}
+}
 
-func procUplo(uplo blas.Uplo) C.char {
+/*func procUplo(uplo blas.Uplo) C.char {
 	if uplo == blas.Upper {
 		return 'U'
 	}
@@ -61,4 +70,4 @@ func (Lapack) Dsytrf(order blas.Order, uplo blas.Uplo, n int, a []float64,
 		(*C.double)(unsafe.Pointer(&a[0])),
 		C.int(lda), (*C.int)(unsafe.Pointer(&ipiv[0])))
 	return lapack.Info(info)
-}
+}*/
