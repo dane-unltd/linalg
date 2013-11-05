@@ -1,12 +1,6 @@
-// Copyright (c) Harri Rautila, 2012
-
-// This file is part of go.opt/linalg/lapack package.
-// It is free software, distributed under the terms of GNU Lesser General Public
-// License Version 3, or any later version. See the COPYING tile included in this archive.
-
 package lapacke
 
-// #cgo linux LDFLAGS: -L/home/dane/local/lib -lopenblas
+// #cgo linux LDFLAGS: -llapacke -lblas
 // #cgo darwin LDFLAGS: -L/usr/local/Cellar/openblas/0.2.8/lib -lopenblas
 // #include <stdlib.h>
 // #include "lapacke.h"
@@ -30,8 +24,66 @@ func Cholesky(a *mat64.Dense) la.CholeskyFactor {
 
 	info := C.LAPACKE_dpotrf(C.int(L.Order), 'L', C.int(L.Rows),
 		(*C.double)(unsafe.Pointer(&L.Data[0])), C.int(L.Stride))
+
+	l.L(l)
+
 	spd = info == 0
 	return la.CholeskyFactor{L: l, SPD: spd}
+}
+
+func SVD(a *mat64.Dense, epsilon, small float64, wantu, wantv bool) la.SVDFactors {
+	m, n := a.Dims()
+	nu := m
+	if n < m {
+		nu = n
+	}
+
+	s := make([]float64, nu)
+	A := a.BlasMatrix()
+	var u, v *mat64.Dense
+	if wantu || wantv {
+		u, _ = mat64.NewDense(m, nu, make([]float64, m*nu))
+		v, _ = mat64.NewDense(nu, n, make([]float64, nu*n))
+
+		U := u.BlasMatrix()
+		V := v.BlasMatrix()
+
+		info := C.LAPACKE_dgesdd(C.int(A.Order), C.char('S'),
+			C.int(m), C.int(n),
+			(*C.double)(unsafe.Pointer(&A.Data[0])), C.int(A.Stride),
+			(*C.double)(unsafe.Pointer(&s[0])),
+			(*C.double)(unsafe.Pointer(&U.Data[0])), C.int(U.Stride),
+			(*C.double)(unsafe.Pointer(&V.Data[0])), C.int(V.Stride))
+		if info != 0 {
+			panic("Lapacke error")
+		}
+	} else {
+		nmax := m
+		if n > m {
+			nmax = n
+		}
+		info := C.LAPACKE_dgesdd(C.int(A.Order), C.char('N'),
+			C.int(m), C.int(n),
+			(*C.double)(unsafe.Pointer(&A.Data[0])), C.int(A.Stride),
+			(*C.double)(unsafe.Pointer(&s[0])),
+			(*C.double)(nil), C.int(nmax),
+			(*C.double)(nil), C.int(nmax))
+		if info != 0 {
+			panic("Lapacke error")
+		}
+	}
+
+	if wantv {
+		v.TCopy(v)
+	} else {
+		v = nil
+	}
+
+	if !wantu {
+		u = nil
+	}
+
+	return la.SVDFactors{u, s, v}
 }
 
 /*func procUplo(uplo blas.Uplo) C.char {
