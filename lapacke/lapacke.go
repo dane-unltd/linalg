@@ -7,7 +7,7 @@
 package lapacke
 
 // #cgo linux LDFLAGS: -L/home/dane/local/lib -lopenblas
-// #cgo darwin LDFLAGS: -L/usr/local/Cellar/openblas/0.2.6/lib -lopenblas
+// #cgo darwin LDFLAGS: -L/usr/local/Cellar/openblas/0.2.8/lib -lopenblas
 // #include <stdlib.h>
 // #include "lapacke.h"
 import "C"
